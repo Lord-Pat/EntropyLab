@@ -1,0 +1,3 @@
+key_id,value,timestamp,algorithm_version
+test-001,abc123,2026-03-23T13:41:21.781283,0.1.0
+test-002,def456,2026-03-23T13:41:21.782343,0.1.0

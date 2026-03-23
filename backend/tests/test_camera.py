@@ -1,7 +1,11 @@
+# Prueba de conexión directa al stream MJPEG de la ESP32 via OpenCV.
+# Captura 30 frames y muestra los FPS en tiempo real.
+# Uso: ejecutar para verificar que el stream está activo y medir rendimiento.
+
+
 import cv2
 import time
-
-STREAM_URL = "http://192.168.32.207/video"
+from config import STREAM_URL
 
 print("Conectando al stream...")
 cap = cv2.VideoCapture(STREAM_URL)
@@ -28,7 +32,6 @@ while True:
     
     print(f"Frame {frame_count} | FPS: {fps:.2f} | Tamaño: {frame.shape}")
     
-    # Paramos después de 20 frames para ver el resultado
     if frame_count >= 20:
         break
 
