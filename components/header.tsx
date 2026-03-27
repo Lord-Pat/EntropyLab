@@ -1,6 +1,10 @@
 import Image from "next/image"
 
-export default function Header() {
+type HeaderProps = {
+  onOpenOnboarding?: () => void
+}
+
+export default function Header({ onOpenOnboarding }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 z-50 w-full border-b border-white/20 bg-neutral-700 backdrop-blur-md">
       <div
@@ -25,7 +29,7 @@ export default function Header() {
             Como funciona
           </a>
           <a href="#" className="text-sm font-medium text-white transition-colors hover:text-teal-300">
-            Documentación
+            Documentaci&oacute;n
           </a>
           <a
             href="https://github.com/Lord-Pat/EntropyLab"
@@ -35,12 +39,13 @@ export default function Header() {
           >
             Github
           </a>
-          <a
-            href="#"
+          <button
+            type="button"
+            onClick={onOpenOnboarding}
             className="rounded-full bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700"
           >
             Obtener claves
-          </a>
+          </button>
         </nav>
       </div>
     </header>
