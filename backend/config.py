@@ -1,5 +1,5 @@
 # ── Cámara ────────────────────────────────────────────
-STREAM_URL = "http://192.168.33.176/video"
+STREAM_URL = "http://192.168.32.142/video"
 
 # ── Base de datos ─────────────────────────────────────
 DB_PATH = "entropylab.db"
