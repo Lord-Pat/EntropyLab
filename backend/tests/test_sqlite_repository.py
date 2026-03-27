@@ -11,15 +11,15 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from infrastructure.sqlite_repository import SQLiteRepository
 from domain.key import Key
 from datetime import datetime
+from config import ALGORITHM_VERSION
 
 repo = SQLiteRepository()
 repo.connect()
 
 key = Key(
-    key_id="test-001",
     value="abc123",
     timestamp=datetime.now(),
-    algorithm_version="0.1.0"
+    algorithm_version=ALGORITHM_VERSION
 )
 
 repo.save_key(key)

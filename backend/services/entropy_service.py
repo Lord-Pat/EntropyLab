@@ -19,5 +19,8 @@ class EntropyService:
 
         entropia = hashlib.sha256(diferencia.tobytes()).digest()
 
+        # importante! hashlib.sha256 devuelve 32 bits, pero solo usaremos 16. Esto está pensado para poder usar en el futuro hashes más completos,
+        # y es como funciona esta librería en concreto.
+
         return entropia
 

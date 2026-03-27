@@ -12,12 +12,13 @@ from infrastructure.sqlite_repository import SQLiteRepository
 from infrastructure.csv_exporter import CSVExporter
 from domain.key import Key
 from datetime import datetime
+from config import ALGORITHM_VERSION
 
 repo = SQLiteRepository()
 repo.connect()
 
-key1 = Key(key_id="test-001", value="abc123", timestamp=datetime.now(), algorithm_version="0.1.0")
-key2 = Key(key_id="test-002", value="def456", timestamp=datetime.now(), algorithm_version="0.1.0")
+key1 = Key(value="abc123", timestamp=datetime.now(), algorithm_version=ALGORITHM_VERSION)
+key2 = Key(value="def456", timestamp=datetime.now(), algorithm_version=ALGORITHM_VERSION)
 
 repo.save_key(key1)
 repo.save_key(key2)

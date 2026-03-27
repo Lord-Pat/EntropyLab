@@ -19,7 +19,7 @@ class SQLiteRepository:
         cursor = self.conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS keys (
-                key_id TEXT PRIMARY KEY,
+                key_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 value TEXT NOT NULL,
                 timestamp TEXT NOT NULL,
                 algorithm_version TEXT NOT NULL
@@ -41,10 +41,9 @@ class SQLiteRepository:
     def save_key(self, key):
         cursor = self.conn.cursor()
         cursor.execute("""
-            INSERT INTO keys (key_id, value, timestamp, algorithm_version)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO keys (value, timestamp, algorithm_version)
+            VALUES (?, ?, ?)
         """, (
-            key.key_id,
             key.value,
             key.timestamp.isoformat(),
             key.algorithm_version
@@ -58,10 +57,10 @@ class SQLiteRepository:
         keys = []
         for row in rows:
             keys.append(Key(
-                key_id=row[0],
                 value=row[1],
                 timestamp=datetime.fromisoformat(row[2]),
-                algorithm_version=row[3]
+                algorithm_version=row[3],
+                key_id=row[0]
             ))
         return keys
 
