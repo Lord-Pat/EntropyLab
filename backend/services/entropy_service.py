@@ -1,16 +1,21 @@
 import hashlib
 import numpy as np
 from infrastructure.camera_reader import CameraReader
-from domain.entropy_frame import EntropyFrame
 
 class EntropyService:
 
     def __init__(self, camera_reader):
         self.camera_reader = camera_reader
+        self.previous_frame = None
 
     def extract_entropy(self):
-        frame1 = self.camera_reader.read_frame()
+        if self.previous_frame is None:
+            frame1 = self.camera_reader.read_frame()
+        else:
+            frame1 = self.previous_frame
+        
         frame2 = self.camera_reader.read_frame()
+        self.previous_frame = frame2
 
         bytes1 = np.frombuffer(frame1.raw_bytes, dtype=np.uint8)
         bytes2 = np.frombuffer(frame2.raw_bytes, dtype=np.uint8)
