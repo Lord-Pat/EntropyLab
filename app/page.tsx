@@ -5,10 +5,10 @@ export default function Home() {
   return (
     <main>
       <Header />
-      <section className="w-screen h-screen bg-teal-500">
+      <section className="w-screen h-screen bg-neutral-950">
       </section>
 
-      <section className="bg-teal-100 py-16">
+      <section className="bg-neutral-900 py-16">
         <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
           <div className="flex gap-12 items-center">
             <div className="flex-1 text-left">
@@ -30,14 +30,14 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="bg-teal-300 py-16">
+      <section className="bg-neutral-950 py-16">
         <div className="mx-auto px-6 flex justify-center items-center" style={{ maxWidth: "1200px" }}>
           <p className="text-center text-base text-gray-700">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           </p>
         </div>
       </section>
-      <section className="bg-teal-100 py-16">
+      <section className="bg-neutral-900 py-16">
         <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
           <div className="flex gap-12 items-center">
             <div className="flex-1">
