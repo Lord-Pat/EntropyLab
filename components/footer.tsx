@@ -2,7 +2,7 @@ import Image from "next/image"
 
 export default function Footer() {
   return (
-    <footer className="bg-neutral-800 py-12">
+    <footer className="bg-black/50 backdrop-blur-md border-t border-white/10 py-12">
       <div
         className="mx-auto flex flex-col items-start gap-8 px-4 sm:px-6 md:flex-row md:items-center md:justify-between"
         style={{ maxWidth: "1200px" }}

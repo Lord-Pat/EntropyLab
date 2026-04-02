@@ -6,7 +6,7 @@ type HeaderProps = {
 
 export default function Header({ onOpenOnboarding }: HeaderProps) {
   return (
-    <header className="fixed top-0 left-0 z-50 w-full border-b border-white/20 bg-neutral-700 backdrop-blur-md">
+    <header className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-black/40 backdrop-blur-md">
       <div
         className="mx-auto flex min-h-16 flex-col gap-3 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between md:py-0"
         style={{ maxWidth: "1200px" }}

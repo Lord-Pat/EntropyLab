@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 
+import MarchingCubesBackground from "@/components/background/MarchingCubesBackground"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import OnboardingModal from "@/components/onboarding-modal"
@@ -33,10 +34,12 @@ export default function LandingPage() {
 
   return (
     <>
+      <MarchingCubesBackground />
       <main>
         <Header onOpenOnboarding={openOnboarding} />
 
-        <section className="min-h-screen bg-neutral-950 pt-28 md:pt-16">
+        {/* Hero — completamente transparente, el Three.js se ve a tope */}
+        <section className="min-h-screen pt-28 md:pt-16">
           <div
             className="mx-auto flex min-h-[calc(100vh-4rem)] items-center px-6"
             style={{ maxWidth: "1200px" }}
@@ -54,12 +57,13 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-neutral-900 py-16">
+        {/* Sección cámara — glassmorphism */}
+        <section className="py-16 bg-black/50 backdrop-blur-md border-y border-white/10">
           <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
             <div className="flex gap-12 items-center">
               <div className="flex-1 text-left">
-                <h2 className="mb-4 text-3xl font-bold">L&aacute;mpara en tiempo real</h2>
-                <p className="text-base text-gray-700">
+                <h2 className="mb-4 text-3xl font-bold text-white">L&aacute;mpara en tiempo real</h2>
+                <p className="text-base text-gray-300">
                   Este es el feed directo de la c&aacute;mara apuntando a nuestra l&aacute;mpara de
                   lava. Cada p&iacute;xel, cada movimiento, contribuye a la generaci&oacute;n de tu
                   clave.
@@ -78,13 +82,14 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-neutral-950 py-16">
+        {/* CTA — transparente para dejar ver el fondo */}
+        <section className="py-24">
           <div
             className="mx-auto flex flex-col items-center justify-center gap-6 px-6"
             style={{ maxWidth: "1200px" }}
           >
             <h1 className="text-center text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl">
-              Tus claves, generadas por <span className="text-red-600">lava</span>
+              Tus claves, generadas por <span className="text-red-500">lava</span>
             </h1>
             <p className="max-w-2xl text-center text-lg leading-8 text-gray-300 md:text-xl">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -99,7 +104,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-neutral-900 py-16">
+        {/* GitHub — glassmorphism */}
+        <section className="py-16 bg-black/50 backdrop-blur-md border-y border-white/10">
           <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
             <div className="flex flex-col gap-10 md:flex-row md:items-center md:gap-12">
               <div className="flex flex-1 justify-center md:justify-start">
@@ -107,7 +113,7 @@ export default function LandingPage() {
                   href="https://github.com/Lord-Pat/EntropyLab"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-neutral-950 px-6 py-3 text-base font-semibold text-white transition-colors hover:border-white/30 hover:bg-neutral-800 md:ml-16"
+                  className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-base font-semibold text-white transition-colors hover:border-white/40 hover:bg-white/10 md:ml-16"
                 >
                   <svg
                     aria-hidden="true"
@@ -120,8 +126,8 @@ export default function LandingPage() {
                 </a>
               </div>
               <div className="flex-1 text-left">
-                <h2 className="mb-4 text-3xl font-bold">Construido en abierto, para todos</h2>
-                <p className="text-base text-gray-700">
+                <h2 className="mb-4 text-3xl font-bold text-white">Construido en abierto, para todos</h2>
+                <p className="text-base text-gray-300">
                   EntropyLab naci&oacute; con la convicci&oacute;n de que la seguridad real no puede
                   depender de cajas negras. Por eso todo lo que construimos es p&uacute;blico:
                   puedes revisar c&oacute;mo capturamos la entrop&iacute;a, c&oacute;mo generamos las claves
