@@ -103,12 +103,28 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
     URL.revokeObjectURL(url)
   }
 
+  const downloadJson = (keys: string[]) => {
+    const payload = {
+      generated: new Date().toISOString(),
+      quantity: keys.length,
+      keys: keys.map((key, i) => ({ id: i + 1, key })),
+    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `entropylab-keys-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const goNext = () => {
     if (step === 4) {
       const keys = fetchKeys(selQty ?? 1)
 
-      if (selExport === "txt" && selDelivery === "download") {
-        downloadTxt(keys)
+      if (selDelivery === "download") {
+        if (selExport === "txt") downloadTxt(keys)
+        if (selExport === "json") downloadJson(keys)
       }
 
       setIsSuccess(true)
