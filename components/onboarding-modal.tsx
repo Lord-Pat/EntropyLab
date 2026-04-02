@@ -103,6 +103,21 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
     URL.revokeObjectURL(url)
   }
 
+  const downloadCsv = (keys: string[]) => {
+    const rows = [
+      ["id", "key", "generated"],
+      ...keys.map((key, i) => [String(i + 1), key, new Date().toISOString()]),
+    ]
+    const csv = rows.map((row) => row.join(",")).join("\n")
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `entropylab-keys-${Date.now()}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const downloadJson = (keys: string[]) => {
     const payload = {
       generated: new Date().toISOString(),
@@ -125,6 +140,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
       if (selDelivery === "download") {
         if (selExport === "txt") downloadTxt(keys)
         if (selExport === "json") downloadJson(keys)
+        if (selExport === "csv") downloadCsv(keys)
       }
 
       setIsSuccess(true)
