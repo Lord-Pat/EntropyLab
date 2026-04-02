@@ -28,9 +28,14 @@ export default function MarchingCubesBackground() {
       )
       camera.position.set(0, 0, 500)
 
-      // Luces más intensas para aspecto brillante
-      const ambientLight = new THREE.AmbientLight(0x111111)
+      // Ambient rojizo fuerte — ninguna bola queda completamente negra
+      const ambientLight = new THREE.AmbientLight(0x550000, 2)
       scene.add(ambientLight)
+
+      // Luz de relleno fija desde atrás/abajo para iluminar sombras
+      const fillLight = new THREE.DirectionalLight(0xff2200, 1.5)
+      fillLight.position.set(-1, -1, -1)
+      scene.add(fillLight)
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
       directionalLight.position.set(0.5, 1, 1)
@@ -45,10 +50,10 @@ export default function MarchingCubesBackground() {
       pointLight2.position.set(-200, -200, 200)
       scene.add(pointLight2)
 
-      // Material más vivo y brillante
+      // Material: emissive más alto para que nunca baje de rojo oscuro
       const material = new THREE.MeshPhongMaterial({
         color: 0xff2200,
-        emissive: 0x550000,
+        emissive: 0x880000,
         specular: 0xffffff,
         shininess: 150,
       })
@@ -68,6 +73,7 @@ export default function MarchingCubesBackground() {
       mount.appendChild(renderer.domElement)
 
       const numBlobs = 10
+
       const updateCubes = (t: number) => {
         effect.reset()
         const subtract = 12

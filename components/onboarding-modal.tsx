@@ -76,8 +76,41 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
     return null
   }
 
+  // TODO: reemplazar por GET a la API real
+  const fetchKeys = (qty: number): string[] => {
+    return Array.from({ length: qty }, () =>
+      Array.from(crypto.getRandomValues(new Uint8Array(32)))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("")
+    )
+  }
+
+  const downloadTxt = (keys: string[]) => {
+    const date = new Date().toLocaleString("es-ES")
+    const lines = [
+      "# EntropyLab - Claves criptográficas",
+      `# Generado: ${date}`,
+      `# Cantidad: ${keys.length}`,
+      "",
+      ...keys.map((key, i) => `${i + 1}. ${key}`),
+    ]
+    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `entropylab-keys-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const goNext = () => {
     if (step === 4) {
+      const keys = fetchKeys(selQty ?? 1)
+
+      if (selExport === "txt" && selDelivery === "download") {
+        downloadTxt(keys)
+      }
+
       setIsSuccess(true)
       return
     }
