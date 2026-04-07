@@ -1,12 +1,10 @@
-# Prueba de la clase SQLiteRepository de infraestructura.
-# Guarda una clave de prueba, la recupera y limpia la base de datos.
-# Uso: verificar que el repositorio escribe y lee correctamente.
-
-
 import sys
 import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+# Prueba de SQLiteRepository.
+# Guarda una clave, la recupera, verifica los métodos nuevos por versión y limpia.
 
 from infrastructure.sqlite_repository import SQLiteRepository
 from domain.key import Key
@@ -26,10 +24,14 @@ repo.save_key(key)
 print("Clave guardada")
 
 keys = repo.get_all_keys()
-print("Claves en la base de datos:", len(keys))
-print(keys[0])
+print(f"Total en BD: {len(keys)}")
+for k in keys:
+    print(f"  [ID {k.key_id}] {k.value} ({k.algorithm_version})")
 
-repo.clear_keys()
-print("Base de datos limpia")
+count = repo.count_keys_by_version(ALGORITHM_VERSION)
+print(f"Claves de versión {ALGORITHM_VERSION}: {count}")
+
+repo.delete_keys_by_version(ALGORITHM_VERSION)
+print("Claves de esa versión eliminadas.")
 
 repo.release()

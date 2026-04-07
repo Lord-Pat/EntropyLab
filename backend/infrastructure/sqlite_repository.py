@@ -1,4 +1,5 @@
 import sqlite3
+import json
 from datetime import datetime
 from domain.key import Key
 from domain.analysis_result import AnalysisResult
@@ -11,7 +12,7 @@ class SQLiteRepository:
         self.conn = None
 
     def connect(self):
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self._create_tables()
         print("Base de datos conectada: " + self.db_path)
 
@@ -64,10 +65,47 @@ class SQLiteRepository:
             ))
         return keys
 
+    def get_keys_by_version(self, version):
+        """Devuelve solo las claves de una versión concreta del algoritmo."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT key_id, value, timestamp, algorithm_version FROM keys WHERE algorithm_version = ?",
+            (version,)
+        )
+        rows = cursor.fetchall()
+        keys = []
+        for row in rows:
+            keys.append(Key(
+                value=row[1],
+                timestamp=datetime.fromisoformat(row[2]),
+                algorithm_version=row[3],
+                key_id=row[0]
+            ))
+        return keys
+
+    def count_keys_by_version(self, version):
+        """Cuántas claves hay acumuladas de una versión concreta."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT COUNT(*) FROM keys WHERE algorithm_version = ?",
+            (version,)
+        )
+        return cursor.fetchone()[0]
+
+    def delete_keys_by_version(self, version):
+        """Borra solo las claves de una versión concreta. No toca el resto."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "DELETE FROM keys WHERE algorithm_version = ?",
+            (version,)
+        )
+        self.conn.commit()
+        print(f"Claves de versión {version} eliminadas.")
+
     def save_result(self, result):
         cursor = self.conn.cursor()
         cursor.execute("""
-            INSERT INTO analysis_results 
+            INSERT INTO analysis_results
             (result_id, timestamp, algorithm_version, sample_size, p_values, passed_tests, notes)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
@@ -75,17 +113,38 @@ class SQLiteRepository:
             result.timestamp.isoformat(),
             result.algorithm_version,
             result.sample_size,
-            str(result.p_values),
-            str(result.passed_tests),
+            json.dumps(result.p_values),
+            json.dumps(result.passed_tests),
             result.notes
         ))
         self.conn.commit()
 
+    def get_all_results(self):
+        """Historial completo de análisis — todas las versiones."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT result_id, timestamp, algorithm_version, sample_size, p_values, passed_tests, notes FROM analysis_results ORDER BY timestamp"
+        )
+        rows = cursor.fetchall()
+        results = []
+        for row in rows:
+            results.append(AnalysisResult(
+                result_id=row[0],
+                timestamp=datetime.fromisoformat(row[1]),
+                algorithm_version=row[2],
+                sample_size=row[3],
+                p_values=json.loads(row[4]),
+                passed_tests=json.loads(row[5]),
+                notes=row[6]
+            ))
+        return results
+
     def clear_keys(self):
+        """Borra TODAS las claves. Solo para tests."""
         cursor = self.conn.cursor()
         cursor.execute("DELETE FROM keys")
         self.conn.commit()
-        print("Claves eliminadas.")    
+        print("Claves eliminadas.")
 
     def release(self):
         if self.conn:

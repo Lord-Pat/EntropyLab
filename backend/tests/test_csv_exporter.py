@@ -1,12 +1,10 @@
-# Prueba de la clase CSVExporter de infraestructura.
-# Guarda dos claves de prueba, las exporta a CSV y limpia la base de datos.
-# Uso: verificar que el exportador crea la carpeta exports/ y escribe el fichero correctamente.
-
-
 import sys
 import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+# Prueba de CSVExporter.
+# Guarda dos claves, las exporta por versión y limpia.
 
 from infrastructure.sqlite_repository import SQLiteRepository
 from infrastructure.csv_exporter import CSVExporter
@@ -23,10 +21,12 @@ key2 = Key(value="def456", timestamp=datetime.now(), algorithm_version=ALGORITHM
 repo.save_key(key1)
 repo.save_key(key2)
 
-keys = repo.get_all_keys()
+keys = repo.get_keys_by_version(ALGORITHM_VERSION)
 
 exporter = CSVExporter()
-exporter.export_keys(keys, "test_export.csv")
+exporter.export_keys(keys, f"test_export_{ALGORITHM_VERSION}.csv")
 
-repo.clear_keys()
+repo.delete_keys_by_version(ALGORITHM_VERSION)
+print("Base de datos limpia.")
+
 repo.release()

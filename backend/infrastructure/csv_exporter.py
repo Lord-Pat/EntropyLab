@@ -4,14 +4,11 @@ from config import CSV_EXPORT_PATH
 
 class CSVExporter:
 
-    def __init__(self):
-        self.export_path = CSV_EXPORT_PATH
-        os.makedirs(self.export_path, exist_ok=True)
-
     def export_keys(self, keys, filename):
-        filepath = os.path.join(self.export_path, filename)
-        with open(filepath, mode="w", newline="", encoding="utf-8") as file:
-            writer = csv.writer(file)
+        os.makedirs(CSV_EXPORT_PATH, exist_ok=True)
+        filepath = os.path.join(CSV_EXPORT_PATH, filename)
+        with open(filepath, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
             writer.writerow(["key_id", "value", "timestamp", "algorithm_version"])
             for key in keys:
                 writer.writerow([
@@ -20,4 +17,4 @@ class CSVExporter:
                     key.timestamp.isoformat(),
                     key.algorithm_version
                 ])
-        print("Exportado: " + filepath)
+        print(f"Exportadas {len(keys)} claves → {filepath}")
