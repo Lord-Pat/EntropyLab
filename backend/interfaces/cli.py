@@ -64,7 +64,7 @@ class CLI:
             try:
                 key = self.key_svc.generate()
                 contador += 1
-                if contador % 10 == 0:
+                if contador % 50 == 0:
                     print(f"  [{contador} claves generadas] última: {key.value}")
             except Exception as e:
                 print(f"Error generando clave: {e}")
@@ -123,8 +123,11 @@ class CLI:
             print("Valor no válido.")
 
     def _api(self):
-        print("\nArrancando servidor API en http://localhost:8000 ...")
-        print("(FastAPI pendiente de implementar)")
+        import uvicorn
+        from interfaces.api import app, init
+        init(self.key_svc)
+        print("\nServidor API en http://localhost:8000")
+        uvicorn.run(app, host="0.0.0.0", port=8000)
 
     def _estado(self):
         total = self.repo.count_keys_by_version(ALGORITHM_VERSION)
