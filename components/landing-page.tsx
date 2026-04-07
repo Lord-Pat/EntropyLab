@@ -104,7 +104,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* GitHub — glassmorphism */}
+        
         <section className="py-16 bg-black/50 backdrop-blur-md border-y border-white/10">
           <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
             <div className="flex flex-col gap-10 md:flex-row md:items-center md:gap-12">

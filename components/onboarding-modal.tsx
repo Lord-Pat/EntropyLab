@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
 
 import styles from "./onboarding-modal.module.css"
 
@@ -143,6 +144,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
         if (selExport === "csv") downloadCsv(keys)
       }
 
+      toast.success(`${selQty ?? 1} clave${(selQty ?? 1) > 1 ? "s" : ""} generada${(selQty ?? 1) > 1 ? "s" : ""} correctamente`)
       setIsSuccess(true)
       return
     }
@@ -221,7 +223,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
           {step === 1 && (
             <div className={`${styles.stepPanel} ${styles.active}`}>
               <p className={styles.stepSub}>
-                Selecciona cu&aacute;ntas claves criptogr&aacute;ficas quieres generar en esta sesi&oacute;n.
+                Selecciona cuántas claves criptográficas quieres generar en esta sesión.
               </p>
 
               <div className={styles.accordion}>
@@ -324,7 +326,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
           {step === 3 && (
             <div className={`${styles.stepPanel} ${styles.active}`}>
               <p className={styles.stepSub}>
-                &iquest;C&oacute;mo quieres obtener tus claves? Desc&aacute;rgalas directamente o rec&iacute;belas por correo.
+                Cómo quieres obtener tus claves? Descárgalas directamente o recíbelas por correo.
               </p>
 
               <div className={styles.exportGridNoMargin}>
@@ -401,7 +403,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
                   <span className={styles.confirmVal}>{fmtLabel}</span>
                 </div>
                 <div className={styles.confirmRow}>
-                  <span className={styles.confirmKey}>M&eacute;todo de obtenci&oacute;n</span>
+                  <span className={styles.confirmKey}>Método de obtención</span>
                   <span className={styles.confirmVal}>{deliveryLabel}</span>
                 </div>
                 {selDelivery === "email" && (
@@ -414,10 +416,6 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
                   <span className={styles.confirmKey}>Estado</span>
                   <span className={styles.confirmBadge}>Listo para generar</span>
                 </div>
-              </div>
-
-              <div className={styles.confirmNotice}>
-                Las claves se generan en el momento de confirmar usando la entrop&iacute;a en vivo de la l&aacute;mpara. No se almacena ning&uacute;n dato en nuestros servidores.
               </div>
             </div>
           )}
