@@ -3,11 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 import io
 import csv
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
+import json
+import os
+import resend
 
 app = FastAPI()
 
@@ -24,12 +22,11 @@ def init(k):
     global key_svc
     key_svc = k
 
-def _generar_claves(cantidad, formato):
-    """Genera las claves y devuelve el contenido en el formato pedido."""
+def _generar_contenido(cantidad, formato):
     claves = [key_svc.generate() for _ in range(cantidad)]
 
     if formato == "json":
-        return "json", [{"value": k.value} for k in claves]
+        return "json", json.dumps([{"value": k.value} for k in claves], indent=2)
 
     if formato == "csv":
         output = io.StringIO()
@@ -49,17 +46,16 @@ def generate_keys(cantidad: int = 1, formato: str = "json"):
     if formato not in ["json", "csv", "txt"]:
         return JSONResponse(status_code=400, content={"error": "Formato no válido."})
 
-    fmt, contenido = _generar_claves(cantidad, formato)
+    fmt, contenido = _generar_contenido(cantidad, formato)
 
     if fmt == "json":
-        return contenido
+        return json.loads(contenido)
 
     media = "text/csv" if fmt == "csv" else "text/plain"
-    filename = f"claves.{fmt}"
     return StreamingResponse(
         iter([contenido]),
         media_type=media,
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={"Content-Disposition": f"attachment; filename=claves.{fmt}"}
     )
 
 @app.post("/keys/send-email")
@@ -71,34 +67,20 @@ def send_email(cantidad: int = 1, formato: str = "json", email: str = ""):
     if not email or "@" not in email:
         return JSONResponse(status_code=400, content={"error": "Email no válido."})
 
-    from config import EMAIL_SENDER, EMAIL_PASSWORD
-
-    fmt, contenido = _generar_claves(cantidad, formato)
-
-    if fmt == "json":
-        import json
-        contenido_str = json.dumps(contenido, indent=2)
-    else:
-        contenido_str = contenido
-
-    # Construir el email
-    msg = MIMEMultipart()
-    msg["From"] = EMAIL_SENDER
-    msg["To"] = email
-    msg["Subject"] = f"EntropyLab — tus {cantidad} claves"
-
-    msg.attach(MIMEText(f"Adjunto encontrarás {cantidad} claves en formato {fmt.upper()}.", "plain"))
-
-    adjunto = MIMEBase("application", "octet-stream")
-    adjunto.set_payload(contenido_str.encode("utf-8"))
-    encoders.encode_base64(adjunto)
-    adjunto.add_header("Content-Disposition", f"attachment; filename=claves.{fmt}")
-    msg.attach(adjunto)
+    resend.api_key = os.getenv("RESEND_API_KEY")
+    fmt, contenido = _generar_contenido(cantidad, formato)
 
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(EMAIL_SENDER, EMAIL_PASSWORD)
-            servidor.sendmail(EMAIL_SENDER, email, msg.as_string())
+        resend.Emails.send({
+            "from": "EntropyLab <onboarding@resend.dev>",
+            "to": [email],
+            "subject": f"EntropyLab — tus {cantidad} claves",
+            "text": f"Adjunto encontrarás {cantidad} claves en formato {fmt.upper()}.",
+            "attachments": [{
+                "filename": f"claves.{fmt}",
+                "content": list(contenido.encode("utf-8"))
+            }]
+        })
         return {"ok": True, "mensaje": f"Claves enviadas a {email}"}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": f"Error enviando email: {str(e)}"})
+        return JSONResponse(status_code=500, content={"error": str(e)})
