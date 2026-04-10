@@ -1,6 +1,6 @@
 import threading
-from config import ALGORITHM_VERSION
 from infrastructure.csv_exporter import CSVExporter
+from config import ALGORITHM_VERSION, GENERATION_LIMIT
 
 class CLI:
 
@@ -54,19 +54,34 @@ class CLI:
         if self._generando:
             print("La generación ya está en curso.")
             return
+        
+        total_actual = self.repo.count_keys_by_version(ALGORITHM_VERSION)
+
+        if total_actual >= GENERATION_LIMIT:
+            print(f"Ya tienes {total_actual:,} claves de la versión {ALGORITHM_VERSION}.")
+            confirmacion = input("¿Seguro que quieres generar más? (s/n): ").strip().lower()
+            if confirmacion != "s":
+                return
+
         self._generando = True
         self._hilo = threading.Thread(target=self._bucle_generacion, daemon=True)
         self._hilo.start()
-        print(f"Generación masiva iniciada (versión {ALGORITHM_VERSION}). Vuelve al menú para pararla.")
+        print(f"Generación iniciada (versión {ALGORITHM_VERSION}). Vuelve al menú para pararla, de lo contrario parará automáticamente al llegar a {GENERATION_LIMIT} claves.")
 
     def _bucle_generacion(self):
         contador = 0
+
         while self._generando:
+            total = self.repo.count_keys_by_version(ALGORITHM_VERSION)
+            if total >= GENERATION_LIMIT:
+                print(f"\n  [✓] Límite de {GENERATION_LIMIT:,} claves alcanzado. Generación completada.")
+                self._generando = False
+                break
             try:
                 key = self.key_svc.generate()
                 contador += 1
                 if contador % 50 == 0:
-                    print(f"  [{contador} claves generadas] última: {key.value}")
+                    print(f"  [{total:,} / {GENERATION_LIMIT:,}] última: {key.value}")
             except Exception as e:
                 print(f"Error generando clave: {e}")
 
@@ -97,7 +112,6 @@ class CLI:
             print("Claves conservadas en BD.")
 
     def _registrar_analisis(self):
-        from config import ALGORITHM_VERSION
         total = self.repo.count_keys_by_version(ALGORITHM_VERSION)
         if total < 1000:
             print(f"Solo hay {total} claves. Genera al menos 1000 antes de analizar.")

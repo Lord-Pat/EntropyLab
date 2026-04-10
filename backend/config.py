@@ -17,6 +17,9 @@ CSV_EXPORT_PATH = "exports/"
 # ── Algoritmo ─────────────────────────────────────────
 ALGORITHM_VERSION = "0.1.0"
 
+# ── Claves generadas masivamente ──────────────────────
+GENERATION_LIMIT = 100000
+
 # ── Email Ngrok ───────────────────────────────────────
 EMAIL_SENDER = os.getenv("ENTROPYLAB_EMAIL")
 
