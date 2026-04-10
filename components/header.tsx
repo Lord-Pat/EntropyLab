@@ -17,7 +17,7 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
             alt="EntropyLab logo"
             width={40}
             height={40}
-            className="h-10 w-10 object-contain"
+            className="h-10 w-10 object-contain invert"
           />
           <div className="text-xl font-bold tracking-tight text-white">
             Entropy<span className="text-red-600">Lab</span>
@@ -26,10 +26,7 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
 
         <nav className="flex flex-wrap items-center gap-4 sm:gap-6 md:justify-end">
           <a href="#" className="text-sm font-medium text-white transition-colors hover:text-teal-300">
-            Como funciona
-          </a>
-          <a href="#" className="text-sm font-medium text-white transition-colors hover:text-teal-300">
-            Documentaci&oacute;n
+            Sobre nosotros
           </a>
           <a
             href="https://github.com/Lord-Pat/EntropyLab"

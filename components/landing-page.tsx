@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-import MarchingCubesBackground from "@/components/background/MarchingCubesBackground"
+import VideoBackground from "@/components/background/video-background"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import OnboardingModal from "@/components/onboarding-modal"
@@ -34,11 +34,10 @@ export default function LandingPage() {
 
   return (
     <>
-      <MarchingCubesBackground />
+      <VideoBackground />
       <main>
         <Header onOpenOnboarding={openOnboarding} />
 
-        {/* Hero — completamente transparente, el Three.js se ve a tope */}
         <section className="min-h-screen pt-28 md:pt-16">
           <div
             className="mx-auto flex min-h-[calc(100vh-4rem)] items-center px-6"
@@ -57,10 +56,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Sección cámara — glassmorphism */}
-        <section className="py-16 bg-black/50 backdrop-blur-md border-y border-white/10">
+        <section className="border-y border-white/10 bg-black/50 py-16 backdrop-blur-md">
           <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
-            <div className="flex gap-12 items-center">
+            <div className="flex items-center gap-12">
               <div className="flex-1 text-left">
                 <h2 className="mb-4 text-3xl font-bold text-white">L&aacute;mpara en tiempo real</h2>
                 <p className="text-base text-gray-300">
@@ -82,7 +80,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* CTA — transparente para dejar ver el fondo */}
         <section className="py-24">
           <div
             className="mx-auto flex flex-col items-center justify-center gap-6 px-6"
@@ -104,8 +101,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        
-        <section className="py-16 bg-black/50 backdrop-blur-md border-y border-white/10">
+        <section className="border-y border-white/10 bg-black/50 py-16 backdrop-blur-md">
           <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
             <div className="flex flex-col gap-10 md:flex-row md:items-center md:gap-12">
               <div className="flex flex-1 justify-center md:justify-start">

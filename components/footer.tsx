@@ -13,7 +13,7 @@ export default function Footer() {
             alt="EntropyLab logo"
             width={40}
             height={40}
-            className="h-10 w-10 object-contain"
+            className="h-10 w-10 object-contain invert"
           />
           <div className="text-xl font-bold tracking-tight text-white">
             Entropy<span className="text-red-600">Lab</span>
@@ -25,13 +25,7 @@ export default function Footer() {
             Inicio
           </a>
           <a href="#" className="text-sm text-teal-100 transition-colors hover:text-white">
-            Nosotros
-          </a>
-          <a href="#" className="text-sm text-teal-100 transition-colors hover:text-white">
-            Servicios
-          </a>
-          <a href="#" className="text-sm text-teal-100 transition-colors hover:text-white">
-            Contacto
+            Sobre Nosotros
           </a>
         </nav>
       </div>

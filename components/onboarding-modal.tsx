@@ -10,6 +10,10 @@ type OnboardingModalProps = {
   onClose: () => void
 }
 
+type OnboardingResponse = {
+  message?: string
+}
+
 const TITLES = [
   "&iquest;Cu&aacute;ntas claves necesitas?",
   "Formato de exportaci&oacute;n",
@@ -33,6 +37,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
   const [accOpen, setAccOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [isSuccess, setIsSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (!isOpen) {
@@ -46,6 +51,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
     setAccOpen(false)
     setEmail("")
     setIsSuccess(false)
+    setIsSubmitting(false)
   }, [isOpen])
 
   useEffect(() => {
@@ -71,81 +77,125 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
       return false
     }
     return false
-  }, [email, isEmailValid, selDelivery, selExport, selQty, step])
+  }, [isEmailValid, selDelivery, selExport, selQty, step])
 
   if (!isOpen) {
     return null
   }
 
-  // TODO: reemplazar por GET a la API real
-  const fetchKeys = (qty: number): string[] => {
-    return Array.from({ length: qty }, () =>
-      Array.from(crypto.getRandomValues(new Uint8Array(32)))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("")
-    )
-  }
-
-  const downloadTxt = (keys: string[]) => {
-    const date = new Date().toLocaleString("es-ES")
-    const lines = [
-      "# EntropyLab - Claves criptográficas",
-      `# Generado: ${date}`,
-      `# Cantidad: ${keys.length}`,
-      "",
-      ...keys.map((key, i) => `${i + 1}. ${key}`),
-    ]
-    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" })
+  const downloadBlob = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `entropylab-keys-${Date.now()}.txt`
-    a.click()
+    const link = document.createElement("a")
+    link.href = url
+    link.download = filename
+    link.click()
     URL.revokeObjectURL(url)
   }
 
-  const downloadCsv = (keys: string[]) => {
-    const rows = [
-      ["id", "key", "generated"],
-      ...keys.map((key, i) => [String(i + 1), key, new Date().toISOString()]),
-    ]
-    const csv = rows.map((row) => row.join(",")).join("\n")
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `entropylab-keys-${Date.now()}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+  const getFilenameFromHeaders = (response: Response, fallbackFilename: string) => {
+    const contentDisposition = response.headers.get("content-disposition")
+    const match = contentDisposition?.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i)
 
-  const downloadJson = (keys: string[]) => {
-    const payload = {
-      generated: new Date().toISOString(),
-      quantity: keys.length,
-      keys: keys.map((key, i) => ({ id: i + 1, key })),
+    if (!match?.[1]) {
+      return fallbackFilename
     }
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `entropylab-keys-${Date.now()}.json`
-    a.click()
-    URL.revokeObjectURL(url)
+
+    return decodeURIComponent(match[1].replace(/"/g, ""))
   }
 
-  const goNext = () => {
-    if (step === 4) {
-      const keys = fetchKeys(selQty ?? 1)
+  const submitOnboarding = async () => {
+    const quantity = selQty ?? 1
+    const format = selExport ?? "txt"
+    const delivery = selDelivery ?? "download"
+    const fallbackFilename = `entropylab-keys-${Date.now()}.${format}`
 
-      if (selDelivery === "download") {
-        if (selExport === "txt") downloadTxt(keys)
-        if (selExport === "json") downloadJson(keys)
-        if (selExport === "csv") downloadCsv(keys)
+    const response = await fetch("/api/onboarding", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        quantity,
+        format,
+        delivery,
+        email: delivery === "email" ? email : undefined,
+      }),
+    })
+
+    if (!response.ok) {
+      let message = "No se pudo completar la solicitud."
+
+      try {
+        const errorPayload = (await response.json()) as { error?: string }
+        if (errorPayload.error) {
+          message = errorPayload.error
+        }
+      } catch {
+        // Si la API no devuelve JSON, mantenemos un mensaje genérico.
       }
 
-      toast.success(`${selQty ?? 1} clave${(selQty ?? 1) > 1 ? "s" : ""} generada${(selQty ?? 1) > 1 ? "s" : ""} correctamente`)
-      setIsSuccess(true)
+      throw new Error(message)
+    }
+
+    const contentType = response.headers.get("content-type") ?? ""
+    const shouldDownload = delivery === "download" || !contentType.includes("application/json")
+
+    if (shouldDownload) {
+      const blob = await response.blob()
+      downloadBlob(blob, getFilenameFromHeaders(response, fallbackFilename))
+      return null
+    }
+
+    return (await response.json()) as OnboardingResponse
+  }
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+  const goNext = async () => {
+    if (step === 4) {
+      try {
+        if (selDelivery === "download") {
+          const response = await fetch(
+            `${API_URL}/keys/generate?cantidad=${selQty}&formato=${selExport}`,
+            { method: "POST" }
+          )
+
+          if (!response.ok) throw new Error("Error generando claves")
+
+          if (selExport === "json") {
+            const data = await response.json()
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            a.href = url
+            a.download = `entropylab-keys-${Date.now()}.json`
+            a.click()
+            URL.revokeObjectURL(url)
+          } else {
+            const blob = await response.blob()
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            a.href = url
+            a.download = `entropylab-keys-${Date.now()}.${selExport}`
+            a.click()
+            URL.revokeObjectURL(url)
+          }
+        }
+
+        if (selDelivery === "email") {
+          const response = await fetch(
+            `${API_URL}/keys/send-email?cantidad=${selQty}&formato=${selExport}&email=${encodeURIComponent(email)}`,
+            { method: "POST" }
+          )
+          if (!response.ok) throw new Error("Error enviando email")
+        }
+
+        toast.success(`${selQty ?? 1} clave${(selQty ?? 1) > 1 ? "s" : ""} generada${(selQty ?? 1) > 1 ? "s" : ""} correctamente`)
+        setIsSuccess(true)
+
+      } catch (error) {
+        toast.error("Error conectando con el servidor. Verifica que la API está activa.")
+      }
       return
     }
 
@@ -153,7 +203,6 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
       setStep((current) => current + 1)
     }
   }
-
   const goBack = () => {
     setStep((current) => Math.max(1, current - 1))
   }
@@ -187,9 +236,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
               <div className={styles.modalEyebrow}>{EYES[step - 1]}</div>
               <div className={styles.modalTitle} dangerouslySetInnerHTML={{ __html: TITLES[step - 1] }} />
             </div>
-            <button type="button" className={styles.modalClose} onClick={onClose} aria-label="Cerrar">
-              &times;
-            </button>
+            <button type="button" className={styles.modalClose} onClick={onClose} aria-label="Cerrar"></button>
           </div>
 
           <div className={styles.stepsRow}>
@@ -271,7 +318,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
                   </div>
                   <div>
                     <div className={styles.exportName}>CSV</div>
-                    <div className={styles.exportDesc}>Hoja de c&aacute;lculo</div>
+                    <div className={styles.exportDesc}>Hoja de cálculo</div>
                   </div>
                   <div className={`${styles.exportCheck} ${selExport === "csv" ? styles.checked : ""}`}>
                     {selExport === "csv" ? <span className={styles.innerDot} /> : null}
@@ -285,8 +332,18 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
                 >
                   <div className={styles.exportIcon}>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M5 3C3.5 3 3 4 3 5v2c0 1-.5 1.5-1 2 .5.5 1 1 1 2v2c0 1 .5 2 2 2" stroke="#555" strokeWidth="1.2" strokeLinecap="round" />
-                      <path d="M11 3c1.5 0 2 1 2 2v2c0 1 .5 1.5 1 2-.5.5-1 1-1 2v2c0 1-.5 2-2 2" stroke="#555" strokeWidth="1.2" strokeLinecap="round" />
+                      <path
+                        d="M5 3C3.5 3 3 4 3 5v2c0 1-.5 1.5-1 2 .5.5 1 1 1 2v2c0 1 .5 2 2 2"
+                        stroke="#555"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M11 3c1.5 0 2 1 2 2v2c0 1 .5 1.5 1 2-.5.5-1 1-1 2v2c0 1-.5 2-2 2"
+                        stroke="#555"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </div>
                   <div>
@@ -337,7 +394,13 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
                 >
                   <div className={styles.exportIcon}>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M8 2v8M5 7l3 3 3-3" stroke="#555" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                      <path
+                        d="M8 2v8M5 7l3 3 3-3"
+                        stroke="#555"
+                        strokeWidth="1.3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                       <rect x="2" y="12" width="12" height="2" rx="1" fill="#555" />
                     </svg>
                   </div>
@@ -399,7 +462,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
                   <span className={styles.confirmVal}>{qtyLabel}</span>
                 </div>
                 <div className={styles.confirmRow}>
-                    <span className={styles.confirmKey}>Formato de exportación</span>
+                  <span className={styles.confirmKey}>Formato de exportación</span>
                   <span className={styles.confirmVal}>{fmtLabel}</span>
                 </div>
                 <div className={styles.confirmRow}>
@@ -426,7 +489,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
         <div className={styles.modalFooter}>
           {step > 1 ? (
             <button type="button" className={styles.btnBack} onClick={goBack}>
-              &larr; Atr&aacute;s
+              Atrás
             </button>
           ) : (
             <div />
@@ -436,9 +499,15 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
             type="button"
             className={`${styles.btnNext} ${isSuccess ? styles.success : ""}`}
             onClick={goNext}
-            disabled={isNextDisabled || isSuccess}
+            disabled={isNextDisabled || isSuccess || isSubmitting}
           >
-            {step === 4 ? (isSuccess ? "Claves generadas" : "Generar claves") : "Continuar →"}
+            {step === 4
+              ? isSuccess
+                ? "Claves generadas"
+                : isSubmitting
+                  ? "Generando..."
+                  : "Generar claves"
+              : "Continuar →"}
           </button>
         </div>
       </div>
