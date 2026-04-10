@@ -4,10 +4,11 @@ from infrastructure.csv_exporter import CSVExporter
 
 class CLI:
 
-    def __init__(self, key_svc, repo, camera):
+    def __init__(self, key_svc, repo, camera, analysis_svc):
         self.key_svc = key_svc
         self.repo = repo
         self.camera = camera
+        self.analysis_svc = analysis_svc
         self._generando = False
         self._hilo = None
 
@@ -96,31 +97,12 @@ class CLI:
             print("Claves conservadas en BD.")
 
     def _registrar_analisis(self):
-        from domain.analysis_result import AnalysisResult
-        from datetime import datetime
-        import uuid
-
-        print("\n— Registrar resultado de análisis externo —")
-        print(f"Versión actual: {ALGORITHM_VERSION}")
-        try:
-            sample_size = int(input("Tamaño de muestra analizada: "))
-            passed_raw = input("Tests pasados (separados por coma, ej: frequency,runs,serial): ")
-            passed_tests = [t.strip() for t in passed_raw.split(",") if t.strip()]
-            notes = input("Notas (opcional): ").strip()
-
-            result = AnalysisResult(
-                result_id=str(uuid.uuid4())[:8],
-                timestamp=datetime.now(),
-                algorithm_version=ALGORITHM_VERSION,
-                sample_size=sample_size,
-                p_values={},
-                passed_tests=passed_tests,
-                notes=notes
-            )
-            self.repo.save_result(result)
-            print(f"Análisis registrado para versión {ALGORITHM_VERSION}.")
-        except ValueError:
-            print("Valor no válido.")
+        from config import ALGORITHM_VERSION
+        total = self.repo.count_keys_by_version(ALGORITHM_VERSION)
+        if total < 1000:
+            print(f"Solo hay {total} claves. Genera al menos 1000 antes de analizar.")
+            return
+        self.analysis_svc.analizar(ALGORITHM_VERSION)
 
     def _api(self):
         import uvicorn
