@@ -1,13 +1,20 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 import io
 import csv
 import json
 import os
 import resend
 
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,7 +47,8 @@ def _generar_contenido(cantidad, formato):
         return "txt", "\n".join([k.value for k in claves])
 
 @app.post("/keys/generate")
-def generate_keys(cantidad: int = 1, formato: str = "json"):
+@limiter.limit("10/minute")
+def generate_keys(request: Request, cantidad: int = 1, formato: str = "json"):
     if cantidad not in [1, 5, 10, 15, 20]:
         return JSONResponse(status_code=400, content={"error": "Cantidad no válida."})
     if formato not in ["json", "csv", "txt"]:
@@ -59,7 +67,8 @@ def generate_keys(cantidad: int = 1, formato: str = "json"):
     )
 
 @app.post("/keys/send-email")
-def send_email(cantidad: int = 1, formato: str = "json", email: str = ""):
+@limiter.limit("5/minute")
+def send_email(request: Request, cantidad: int = 1, formato: str = "json", email: str = ""):
     if cantidad not in [1, 5, 10, 15, 20]:
         return JSONResponse(status_code=400, content={"error": "Cantidad no válida."})
     if formato not in ["json", "csv", "txt"]:
