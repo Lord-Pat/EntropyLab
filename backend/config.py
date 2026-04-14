@@ -6,7 +6,7 @@ load_dotenv()
 
 
 # ── Cámara ────────────────────────────────────────────
-STREAM_URL = "http://192.168.34.59/video"
+STREAM_URL = "http://192.168.32.124/video"
 
 # ── Base de datos ─────────────────────────────────────
 DB_PATH = "entropylab.db"
@@ -15,7 +15,7 @@ DB_PATH = "entropylab.db"
 CSV_EXPORT_PATH = "exports/"
 
 # ── Algoritmo ─────────────────────────────────────────
-ALGORITHM_VERSION = "0.1.0"
+ALGORITHM_VERSION = "0.3.0"
 
 # ── Claves generadas masivamente ──────────────────────
 GENERATION_LIMIT = 100000
