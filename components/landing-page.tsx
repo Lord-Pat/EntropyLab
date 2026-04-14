@@ -1,29 +1,64 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import VideoBackground from "@/components/background/video-background"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import OnboardingModal from "@/components/onboarding-modal"
 
-export default function LandingPage() {
-  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
+function useInView(threshold = 0.25) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    if (!isOnboardingOpen) {
-      return
-    }
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setVisible(true)
+      },
+      { threshold }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [threshold])
 
+  return { ref, visible }
+}
+
+export default function LandingPage() {
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
+  const [lastSectionActive, setLastSectionActive] = useState(false)
+  const scrollRef = useRef<HTMLElement>(null)
+  const lastSectionRef = useRef<HTMLElement>(null)
+  const s1 = useInView(0.1)
+  const s2 = useInView()
+  const s3 = useInView()
+  const s4 = useInView()
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [])
+
+  useEffect(() => {
+    const el = lastSectionRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setLastSectionActive(entry.isIntersecting),
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!isOnboardingOpen) return
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOnboardingOpen(false)
-      }
+      if (event.key === "Escape") setIsOnboardingOpen(false)
     }
-
     document.body.style.overflow = "hidden"
     window.addEventListener("keydown", handleEscape)
-
     return () => {
       document.body.style.overflow = ""
       window.removeEventListener("keydown", handleEscape)
@@ -35,19 +70,28 @@ export default function LandingPage() {
   return (
     <>
       <VideoBackground />
-      <main>
-        <Header onOpenOnboarding={openOnboarding} />
 
-        <section className="min-h-screen pt-28 md:pt-16">
+      <Header onOpenOnboarding={openOnboarding} />
+
+      <main
+        ref={scrollRef}
+        className="h-screen snap-y snap-mandatory overflow-y-scroll"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {/* Section 1 — Hero */}
+        <section className="flex h-screen snap-start items-center">
           <div
-            className="mx-auto flex min-h-[calc(100vh-4rem)] items-center px-6"
+            ref={s1.ref}
+            className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
+              s1.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            }`}
             style={{ maxWidth: "1200px" }}
           >
             <div className="max-w-2xl lg:max-w-[50%]">
               <h1 className="text-left text-4xl font-black leading-[1em] tracking-tight text-white sm:text-5xl md:text-6xl">
                 Claves generadas a trav&eacute;s de la aleatoriedad de la lava
               </h1>
-              <p className="mt-6 text-lg leading-[1em] text-gray-300">
+              <p className="mt-6 text-lg leading-[1.4em] text-gray-300">
                 EntropyLab captura el movimiento impredecible de l&aacute;mparas de lava para
                 generar claves criptogr&aacute;ficas de alta entrop&iacute;a. Sin algoritmos, sin
                 patrones: entrop&iacute;a f&iacute;sica pura. 100% open source.
@@ -56,9 +100,16 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-black py-16">
-          <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
-            <div className="flex items-center gap-12">
+        {/* Section 2 — Lava lamp feed */}
+        <section className="flex h-screen snap-start items-center border-y border-white/10 bg-black">
+          <div
+            ref={s2.ref}
+            className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
+              s2.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            }`}
+            style={{ maxWidth: "1200px" }}
+          >
+            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-12">
               <div className="flex-1 text-left">
                 <h2 className="mb-4 text-3xl font-bold text-white">L&aacute;mpara en tiempo real</h2>
                 <p className="text-base text-gray-300">
@@ -68,7 +119,7 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="flex-1">
-                <div className="aspect-4/3 w-full overflow-hidden rounded-lg bg-teal-300">
+                <div className="aspect-4/3 w-full overflow-hidden">
                   <video
                     autoPlay
                     loop
@@ -85,9 +136,13 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24">
+        {/* Section 3 — CTA */}
+        <section className="flex h-screen snap-start items-center">
           <div
-            className="mx-auto flex flex-col items-center justify-center gap-6 px-6"
+            ref={s3.ref}
+            className={`mx-auto flex w-full flex-col items-center justify-center gap-6 px-6 transition-all duration-700 ease-out ${
+              s3.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            }`}
             style={{ maxWidth: "1200px" }}
           >
             <h1 className="text-center text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl">
@@ -106,8 +161,15 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-black/50 py-16 backdrop-blur-md">
-          <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
+        {/* Section 4 — Open source */}
+        <section ref={lastSectionRef} className="flex h-screen snap-start items-center border-y border-white/10 bg-black/50 backdrop-blur-md">
+          <div
+            ref={s4.ref}
+            className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
+              s4.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            }`}
+            style={{ maxWidth: "1200px" }}
+          >
             <div className="flex flex-col gap-10 md:flex-row md:items-center md:gap-12">
               <div className="flex flex-1 justify-center md:justify-start">
                 <a
@@ -138,9 +200,15 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        <Footer />
       </main>
+
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-40 transition-opacity duration-300 ${
+          lastSectionActive ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
+        <Footer />
+      </div>
 
       <OnboardingModal
         isOpen={isOnboardingOpen}
