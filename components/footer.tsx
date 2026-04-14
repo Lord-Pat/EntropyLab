@@ -1,13 +1,14 @@
 import Image from "next/image"
+import Link from "next/link"
 
 export default function Footer() {
   return (
-    <footer className="bg-black/50 backdrop-blur-md border-t border-white/10 py-12">
+    <footer className="border-t border-white/10 bg-black/50 py-12 backdrop-blur-md">
       <div
         className="mx-auto flex flex-col items-start gap-8 px-4 sm:px-6 md:flex-row md:items-center md:justify-between"
         style={{ maxWidth: "1200px" }}
       >
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <Image
             src="/lava lamp logo.png"
             alt="EntropyLab logo"
@@ -18,15 +19,21 @@ export default function Footer() {
           <div className="text-xl font-bold tracking-tight text-white">
             Entropy<span className="text-red-600">Lab</span>
           </div>
-        </div>
+        </Link>
 
         <nav className="flex flex-wrap gap-4 sm:gap-8 md:justify-end">
-          <a href="#" className="text-sm text-teal-100 transition-colors hover:text-white">
+          <Link
+            href="/"
+            className="text-sm text-teal-100 transition-colors hover:text-white"
+          >
             Inicio
-          </a>
-          <a href="#" className="text-sm text-teal-100 transition-colors hover:text-white">
+          </Link>
+          <Link
+            href="/sobre-nosotros"
+            className="text-sm text-teal-100 transition-colors hover:text-white"
+          >
             Sobre Nosotros
-          </a>
+          </Link>
         </nav>
       </div>
     </footer>

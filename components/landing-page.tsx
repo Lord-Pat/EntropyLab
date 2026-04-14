@@ -44,10 +44,10 @@ export default function LandingPage() {
             style={{ maxWidth: "1200px" }}
           >
             <div className="max-w-2xl lg:max-w-[50%]">
-              <h1 className="text-left text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">
+              <h1 className="text-left text-4xl font-black leading-[1em] tracking-tight text-white sm:text-5xl md:text-6xl">
                 Claves generadas a trav&eacute;s de la aleatoriedad de la lava
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-300">
+              <p className="mt-6 text-lg leading-[1em] text-gray-300">
                 EntropyLab captura el movimiento impredecible de l&aacute;mparas de lava para
                 generar claves criptogr&aacute;ficas de alta entrop&iacute;a. Sin algoritmos, sin
                 patrones: entrop&iacute;a f&iacute;sica pura. 100% open source.
@@ -56,7 +56,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-black/50 py-16 backdrop-blur-md">
+        <section className="border-y border-white/10 bg-black py-16">
           <div className="mx-auto px-6" style={{ maxWidth: "1200px" }}>
             <div className="flex items-center gap-12">
               <div className="flex-1 text-left">
@@ -69,11 +69,16 @@ export default function LandingPage() {
               </div>
               <div className="flex-1">
                 <div className="aspect-4/3 w-full overflow-hidden rounded-lg bg-teal-300">
-                  <img
-                    src="https://placehold.co/800x600"
-                    alt="Placeholder"
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    aria-label="Movimiento de una lampara de lava"
                     className="h-full w-full object-cover"
-                  />
+                  >
+                    <source src="/Lava_lamp_video_movement.mp4" type="video/mp4" />
+                  </video>
                 </div>
               </div>
             </div>

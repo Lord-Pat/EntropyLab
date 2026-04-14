@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 
 type HeaderProps = {
   onOpenOnboarding?: () => void
@@ -11,7 +12,7 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
         className="mx-auto flex min-h-16 flex-col gap-3 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between md:py-0"
         style={{ maxWidth: "1200px" }}
       >
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <Image
             src="/lava lamp logo.png"
             alt="EntropyLab logo"
@@ -22,12 +23,15 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
           <div className="text-xl font-bold tracking-tight text-white">
             Entropy<span className="text-red-600">Lab</span>
           </div>
-        </div>
+        </Link>
 
         <nav className="flex flex-wrap items-center gap-4 sm:gap-6 md:justify-end">
-          <a href="#" className="text-sm font-medium text-white transition-colors hover:text-teal-300">
+          <Link
+            href="/sobre-nosotros"
+            className="text-sm font-medium text-white transition-colors hover:text-teal-300"
+          >
             Sobre nosotros
-          </a>
+          </Link>
           <a
             href="https://github.com/Lord-Pat/EntropyLab"
             target="_blank"
@@ -36,13 +40,22 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
           >
             Github
           </a>
-          <button
-            type="button"
-            onClick={onOpenOnboarding}
-            className="rounded-full bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700"
-          >
-            Obtener claves
-          </button>
+          {onOpenOnboarding ? (
+            <button
+              type="button"
+              onClick={onOpenOnboarding}
+              className="rounded-full bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700"
+            >
+              Obtener claves
+            </button>
+          ) : (
+            <Link
+              href="/"
+              className="rounded-full bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700"
+            >
+              Obtener claves
+            </Link>
+          )}
         </nav>
       </div>
     </header>
