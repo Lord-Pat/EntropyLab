@@ -3,7 +3,7 @@
 export default function VideoBackground() {
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden bg-black"
+      className="pointer-events-none absolute inset-0 z-[-1] overflow-hidden bg-black"
       style={{ backgroundColor: "#5b3222" }}
     >
       <div className="absolute inset-0" style={{ mixBlendMode: "difference" }}>

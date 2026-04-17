@@ -6,6 +6,7 @@ import VideoBackground from "@/components/background/video-background"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import OnboardingModal from "@/components/onboarding-modal"
+import { Button } from "@/components/ui/button"
 
 function useInView(threshold = 0.25) {
   const ref = useRef<HTMLDivElement>(null)
@@ -29,27 +30,13 @@ function useInView(threshold = 0.25) {
 
 export default function LandingPage() {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
-  const [lastSectionActive, setLastSectionActive] = useState(false)
   const scrollRef = useRef<HTMLElement>(null)
-  const lastSectionRef = useRef<HTMLElement>(null)
   const s1 = useInView(0.1)
   const s2 = useInView()
   const s3 = useInView()
-  const s4 = useInView()
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0
-  }, [])
-
-  useEffect(() => {
-    const el = lastSectionRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => setLastSectionActive(entry.isIntersecting),
-      { threshold: 0.5 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
@@ -69,8 +56,6 @@ export default function LandingPage() {
 
   return (
     <>
-      <VideoBackground />
-
       <Header onOpenOnboarding={openOnboarding} />
 
       <main
@@ -79,7 +64,8 @@ export default function LandingPage() {
         style={{ scrollbarWidth: "none" }}
       >
         {/* Section 1 — Hero */}
-        <section className="flex h-screen snap-start items-center">
+        <section className="relative flex h-screen snap-start items-center overflow-hidden">
+          <VideoBackground />
           <div
             ref={s1.ref}
             className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
@@ -87,21 +73,21 @@ export default function LandingPage() {
             }`}
             style={{ maxWidth: "1200px" }}
           >
-            <div className="max-w-2xl lg:max-w-[50%]">
-              <h1 className="text-left text-4xl font-black leading-[1em] tracking-tight text-white sm:text-5xl md:text-6xl">
-                Claves generadas a trav&eacute;s de la aleatoriedad de la lava
+            <div className="max-w-2xl lg:max-w-[100%]">
+              <h1 className="text-center font-black leading-[1em] text-white" style={{ fontSize: "6em", letterSpacing: "-0.04em", textShadow: "0px 0px 7px rgba(10,10,10,0.97)" }}>
+                Claves generadas a través de la aleatoriedad de la lava
               </h1>
-              <p className="mt-6 text-lg leading-[1.4em] text-gray-300">
+              <p className="mt-6 text-gray-300" style={{ textAlign: "center", fontSize: "1.5em", fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1em", textShadow: "0px 0px 7px rgba(10,10,10,0.97)" }}>
                 EntropyLab captura el movimiento impredecible de l&aacute;mparas de lava para
-                generar claves criptogr&aacute;ficas de alta entrop&iacute;a. Sin algoritmos, sin
+                generar <span style={{ fontWeight: 700 }}>claves criptogr&aacute;ficas de alta entrop&iacute;a</span>. Sin algoritmos, sin
                 patrones: entrop&iacute;a f&iacute;sica pura. 100% open source.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Section 2 — Lava lamp feed */}
-        <section className="flex h-screen snap-start items-center border-y border-white/10 bg-black">
+        {/* Section 2 — Three pillars */}
+        <section className="flex h-auto snap-start items-center border-y border-white/10 bg-black py-12.5">
           <div
             ref={s2.ref}
             className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
@@ -109,106 +95,102 @@ export default function LandingPage() {
             }`}
             style={{ maxWidth: "1200px" }}
           >
-            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-12">
-              <div className="flex-1 text-left">
-                <h2 className="mb-4 text-3xl font-bold text-white">L&aacute;mpara en tiempo real</h2>
-                <p className="text-base text-gray-300">
+            <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-16">
+              <div className="flex flex-col text-left">
+                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>L&aacute;mpara en tiempo real</h3>
+                <hr style={{ borderColor: "#fafafa", borderWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
+                <p className="text-base text-gray-300" style={{ fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.3em" }}>
                   Este es el feed directo de la c&aacute;mara apuntando a nuestra l&aacute;mpara de
                   lava. Cada p&iacute;xel, cada movimiento, contribuye a la generaci&oacute;n de tu
                   clave.
                 </p>
+                <Button asChild className="mt-6 w-fit rounded-full text-xs uppercase hover:opacity-80" style={{ backgroundColor: "#fafafa", color: "#0a0a0a" }}>
+                  <a href="#">Saber más</a>
+                </Button>
               </div>
-              <div className="flex-1">
-                <div className="aspect-4/3 w-full overflow-hidden">
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    aria-label="Movimiento de una lampara de lava"
-                    className="h-full w-full object-cover"
-                  >
-                    <source src="/Lava_lamp_video_movement.mp4" type="video/mp4" />
-                  </video>
-                </div>
+              <div className="flex flex-col text-left">
+                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>
+                  Tus claves, generadas por <span className="text-red-500">lava</span>
+                </h3>
+                <hr style={{ borderColor: "#fafafa", borderTopWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
+                <p className="text-base text-gray-300" style={{ fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.3em" }}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </p>
+                <Button asChild className="mt-6 w-fit rounded-full text-xs uppercase hover:opacity-80" style={{ backgroundColor: "#fafafa", color: "#0a0a0a" }}>
+                  <a href="#">Saber más</a>
+                </Button>
+              </div>
+              <div className="flex flex-col text-left">
+                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>Construido en abierto, para todos</h3>
+                <hr style={{ borderColor: "#fafafa", borderTopWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
+                <p className="text-base text-gray-300" style={{ fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.3em" }}>
+                  EntropyLab naci&oacute; con la convicci&oacute;n de que la seguridad real no puede
+                  depender de cajas negras. Por eso todo lo que construimos es p&uacute;blico:
+                  puedes revisar c&oacute;mo capturamos la entrop&iacute;a, c&oacute;mo generamos las claves
+                  y c&oacute;mo te las entregamos.
+                </p>
+                <Button asChild className="mt-6 w-fit rounded-full text-xs uppercase hover:opacity-80" style={{ backgroundColor: "#fafafa", color: "#0a0a0a" }}>
+                  <a href="#">Saber más</a>
+                </Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Section 3 — CTA */}
-        <section className="flex h-screen snap-start items-center">
+        {/* Section 3 — Three pillars (duplicate) */}
+        <section className="flex h-auto snap-start items-center border-y border-white/10 bg-black py-12.5">
           <div
             ref={s3.ref}
-            className={`mx-auto flex w-full flex-col items-center justify-center gap-6 px-6 transition-all duration-700 ease-out ${
+            className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
               s3.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
             }`}
             style={{ maxWidth: "1200px" }}
           >
-            <h1 className="text-center text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl">
-              Tus claves, generadas por <span className="text-red-500">lava</span>
-            </h1>
-            <p className="max-w-2xl text-center text-lg leading-8 text-gray-300 md:text-xl">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </p>
-            <button
-              type="button"
-              onClick={openOnboarding}
-              className="rounded-full bg-red-600 px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-red-700"
-            >
-              Obtener claves
-            </button>
-          </div>
-        </section>
-
-        {/* Section 4 — Open source */}
-        <section ref={lastSectionRef} className="flex h-screen snap-start items-center border-y border-white/10 bg-black/50 backdrop-blur-md">
-          <div
-            ref={s4.ref}
-            className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
-              s4.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
-            style={{ maxWidth: "1200px" }}
-          >
-            <div className="flex flex-col gap-10 md:flex-row md:items-center md:gap-12">
-              <div className="flex flex-1 justify-center md:justify-start">
-                <a
-                  href="https://github.com/Lord-Pat/EntropyLab"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-base font-semibold text-white transition-colors hover:border-white/40 hover:bg-white/10 md:ml-16"
-                >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-5 w-5 fill-current"
-                  >
-                    <path d="M12 .5C5.65.5.5 5.66.5 12.03c0 5.1 3.29 9.42 7.86 10.95.57.11.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.69-1.28-1.69-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.35.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.3 1.19-3.11-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.19 1.19a10.9 10.9 0 0 1 5.8 0c2.21-1.5 3.18-1.19 3.18-1.19.64 1.59.24 2.77.12 3.06.74.81 1.19 1.85 1.19 3.11 0 4.43-2.68 5.4-5.24 5.69.41.35.78 1.05.78 2.12 0 1.53-.01 2.76-.01 3.14 0 .31.2.67.79.55a11.53 11.53 0 0 0 7.85-10.95C23.5 5.66 18.35.5 12 .5Z" />
-                  </svg>
-                  Ver en GitHub
-                </a>
+            <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-16">
+              <div className="flex flex-col text-left">
+                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>L&aacute;mpara en tiempo real</h3>
+                <hr style={{ borderColor: "#fafafa", borderWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
+                <p className="text-base text-gray-300" style={{ fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.3em" }}>
+                  Este es el feed directo de la c&aacute;mara apuntando a nuestra l&aacute;mpara de
+                  lava. Cada p&iacute;xel, cada movimiento, contribuye a la generaci&oacute;n de tu
+                  clave.
+                </p>
+                <Button asChild className="mt-6 w-fit rounded-full text-xs uppercase hover:opacity-80" style={{ backgroundColor: "#fafafa", color: "#0a0a0a" }}>
+                  <a href="#">Saber más</a>
+                </Button>
               </div>
-              <div className="flex-1 text-left">
-                <h2 className="mb-4 text-3xl font-bold text-white">Construido en abierto, para todos</h2>
-                <p className="text-base text-gray-300">
+              <div className="flex flex-col text-left">
+                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>
+                  Tus claves, generadas por <span className="text-red-500">lava</span>
+                </h3>
+                <hr style={{ borderColor: "#fafafa", borderTopWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
+                <p className="text-base text-gray-300" style={{ fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.3em" }}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </p>
+                <Button asChild className="mt-6 w-fit rounded-full text-xs uppercase hover:opacity-80" style={{ backgroundColor: "#fafafa", color: "#0a0a0a" }}>
+                  <a href="#">Saber más</a>
+                </Button>
+              </div>
+              <div className="flex flex-col text-left">
+                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>Construido en abierto, para todos</h3>
+                <hr style={{ borderColor: "#fafafa", borderTopWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
+                <p className="text-base text-gray-300" style={{ fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.3em" }}>
                   EntropyLab naci&oacute; con la convicci&oacute;n de que la seguridad real no puede
                   depender de cajas negras. Por eso todo lo que construimos es p&uacute;blico:
                   puedes revisar c&oacute;mo capturamos la entrop&iacute;a, c&oacute;mo generamos las claves
-                  y c&oacute;mo te las entregamos. Sin sorpresas, sin letra peque&ntilde;a.
+                  y c&oacute;mo te las entregamos.
                 </p>
+                <Button asChild className="mt-6 w-fit rounded-full text-xs uppercase hover:opacity-80" style={{ backgroundColor: "#fafafa", color: "#0a0a0a" }}>
+                  <a href="#">Saber más</a>
+                </Button>
               </div>
             </div>
           </div>
         </section>
+
       </main>
 
-      <div
-        className={`fixed bottom-0 left-0 right-0 z-40 transition-opacity duration-300 ${
-          lastSectionActive ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      >
-        <Footer />
-      </div>
+      <Footer />
 
       <OnboardingModal
         isOpen={isOnboardingOpen}
