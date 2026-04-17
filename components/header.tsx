@@ -26,17 +26,17 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
         </Link>
 
         <nav className="flex flex-wrap items-center gap-4 sm:gap-6 md:justify-end">
-          <Link
-            href="/sobre-nosotros"
-            className="text-sm font-medium text-white transition-colors hover:text-teal-300"
+          <a
+            href="/#sobre-nosotros"
+            className="text-sm font-medium text-white outline-none transition-colors hover:text-red-400"
           >
             Sobre nosotros
-          </Link>
+          </a>
           <a
             href="https://github.com/Lord-Pat/EntropyLab"
             target="_blank"
             rel="noreferrer"
-            className="text-sm font-medium text-white transition-colors hover:text-teal-300"
+            className="text-sm font-medium text-white outline-none transition-colors hover:text-red-400"
           >
             Github
           </a>
