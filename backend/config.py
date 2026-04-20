@@ -15,7 +15,7 @@ DB_PATH = "entropylab.db"
 CSV_EXPORT_PATH = "exports/"
 
 # ── Algoritmo ─────────────────────────────────────────
-ALGORITHM_VERSION = "0.4.0"
+ALGORITHM_VERSION = "0.3.0"
 
 # ── Claves generadas masivamente ──────────────────────
 GENERATION_LIMIT = 100000
