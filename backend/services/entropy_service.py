@@ -19,13 +19,13 @@ class EntropyService:
         if self.tres_frames:
             if self.preprevious_frame is None or self.previous_frame is None:
                 frame1 = self.camera_reader.read_frame()
-                time.sleep(0.05)
+                time.sleep(0.1)
                 frame2 = self.camera_reader.read_frame()
             else:
                 frame1 = self.preprevious_frame
                 frame2 = self.previous_frame
 
-            time.sleep(0.05)
+            time.sleep(0.1)
             frame3 = self.camera_reader.read_frame()
             self.preprevious_frame = frame2
             self.previous_frame = frame3

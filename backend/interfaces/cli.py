@@ -124,7 +124,7 @@ class CLI:
         init(self.key_svc)
         print("\nServidor API en http://localhost:8000")
         uvicorn.run(app, host="0.0.0.0", port=8000)
-
+        
     def _estado(self):
         total = self.repo.count_keys_by_version(ALGORITHM_VERSION)
         print("\n— Estado del sistema —")
@@ -134,12 +134,18 @@ class CLI:
         print(f"  Versión actual: {ALGORITHM_VERSION}")
         print(f"  Claves en BD:   {total}")
 
-        resultados = self.repo.get_all_results()
-        if resultados:
-            print(f"  Análisis guardados: {len(resultados)}")
-            for r in resultados:
-                estado = f"{len(r.passed_tests)} tests pasados"
-                print(f"    [{r.algorithm_version}] {r.timestamp.strftime('%d/%m %H:%M')} — {estado} — {r.notes or 'sin notas'}")
+        nist_results = self.repo.get_all_nist_results()
+        shannon_results = self.repo.get_all_shannon_results()
+
+        if nist_results:
+            print(f"\n  Análisis NIST guardados: {len(nist_results)}")
+            for r in nist_results:
+                print(f"    [{r.algorithm_version}] {r.timestamp.strftime('%d/%m %H:%M')} — {r.notes or 'sin notas'}")
+
+        if shannon_results:
+            print(f"\n  Análisis Shannon guardados: {len(shannon_results)}")
+            for r in shannon_results:
+                print(f"    [{r.algorithm_version}] {r.timestamp.strftime('%d/%m %H:%M')} — {r.notes or 'sin notas'}")
 
     def _salir(self):
         if self._generando:

@@ -2,7 +2,8 @@ import sqlite3
 import json
 from datetime import datetime
 from domain.key import Key
-from domain.analysis_result import AnalysisResult
+from domain.nist_result import NistResult
+from domain.shannon_result import ShannonResult
 from config import DB_PATH
 
 class SQLiteRepository:
@@ -26,14 +27,25 @@ class SQLiteRepository:
                 algorithm_version TEXT NOT NULL
             )
         """)
+
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS analysis_results (
+            CREATE TABLE IF NOT EXISTS nist_results (
                 result_id TEXT PRIMARY KEY,
                 timestamp TEXT NOT NULL,
                 algorithm_version TEXT NOT NULL,
                 sample_size INTEGER NOT NULL,
                 p_values TEXT NOT NULL,
                 passed_tests TEXT NOT NULL,
+                notes TEXT
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS shannon_results (
+                result_id TEXT PRIMARY KEY,
+                timestamp TEXT NOT NULL,
+                algorithm_version TEXT NOT NULL,
+                sample_size INTEGER NOT NULL,
+                shannon REAL NOT NULL,
                 notes TEXT
             )
         """)
@@ -102,10 +114,10 @@ class SQLiteRepository:
         self.conn.commit()
         print(f"Claves de versión {version} eliminadas.")
 
-    def save_result(self, result):
+    def save_nist_result(self, result):
         cursor = self.conn.cursor()
         cursor.execute("""
-            INSERT INTO analysis_results
+            INSERT INTO nist_results
             (result_id, timestamp, algorithm_version, sample_size, p_values, passed_tests, notes)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
@@ -119,25 +131,48 @@ class SQLiteRepository:
         ))
         self.conn.commit()
 
-    def get_all_results(self):
-        """Historial completo de análisis — todas las versiones."""
+    def get_all_nist_results(self):
         cursor = self.conn.cursor()
-        cursor.execute(
-            "SELECT result_id, timestamp, algorithm_version, sample_size, p_values, passed_tests, notes FROM analysis_results ORDER BY timestamp"
-        )
+        cursor.execute("SELECT result_id, timestamp, algorithm_version, sample_size, p_values, passed_tests, notes FROM nist_results ORDER BY timestamp")
         rows = cursor.fetchall()
-        results = []
-        for row in rows:
-            results.append(AnalysisResult(
-                result_id=row[0],
-                timestamp=datetime.fromisoformat(row[1]),
-                algorithm_version=row[2],
-                sample_size=row[3],
-                p_values=json.loads(row[4]),
-                passed_tests=json.loads(row[5]),
-                notes=row[6]
-            ))
-        return results
+        return [NistResult(
+            result_id=r[0],
+            timestamp=datetime.fromisoformat(r[1]),
+            algorithm_version=r[2],
+            sample_size=r[3],
+            p_values=json.loads(r[4]),
+            passed_tests=json.loads(r[5]),
+            notes=r[6]
+        ) for r in rows]
+
+    def save_shannon_result(self, result):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT INTO shannon_results
+            (result_id, timestamp, algorithm_version, sample_size, shannon, notes)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            result.result_id,
+            result.timestamp.isoformat(),
+            result.algorithm_version,
+            result.sample_size,
+            result.shannon,
+            result.notes
+        ))
+        self.conn.commit()
+
+    def get_all_shannon_results(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT result_id, timestamp, algorithm_version, sample_size, shannon, notes FROM shannon_results ORDER BY timestamp")
+        rows = cursor.fetchall()
+        return [ShannonResult(
+            result_id=r[0],
+            timestamp=datetime.fromisoformat(r[1]),
+            algorithm_version=r[2],
+            sample_size=r[3],
+            shannon=r[4],
+            notes=r[5]
+        ) for r in rows]
 
     def clear_keys(self):
         """Borra TODAS las claves. Solo para tests."""
