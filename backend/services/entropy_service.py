@@ -1,6 +1,8 @@
 import importlib
 from config import ALGORITHM_VERSION
 import time
+import json
+import os
 
 ALGORITMOS_TRES_FRAMES = ["0_4_0"]
 
@@ -10,13 +12,20 @@ class EntropyService:
         self.camera_reader = camera_reader
         self.previous_frame = None
         self.preprevious_frame = None
+
         version_module = ALGORITHM_VERSION.replace(".", "_")
         modulo = importlib.import_module(f"services.algorithms.v{version_module}")
         self.extraer_entropia = modulo.extraer_entropia
-        self.tres_frames = version_module in ALGORITMOS_TRES_FRAMES
+
+        json_path = os.path.join(os.path.dirname(__file__), "algorithms", "algorithms.json")
+        with open(json_path, "r") as f:
+            algoritmos = json.load(f)
+
+        config = algoritmos.get(version_module, {"frames": 2})
+        self.num_frames = config["frames"]
 
     def extract_entropy(self):
-        if self.tres_frames:
+        if self.num_frames == 3:
             if self.preprevious_frame is None or self.previous_frame is None:
                 frame1 = self.camera_reader.read_frame()
                 time.sleep(0.1)
@@ -41,4 +50,4 @@ class EntropyService:
             frame2 = self.camera_reader.read_frame()
             self.previous_frame = frame2
 
-            return self.extraer_entropia(frame1, frame2)        
+            return self.extraer_entropia(frame1, frame2)  
