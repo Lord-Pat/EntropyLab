@@ -236,7 +236,11 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
               <div className={styles.modalEyebrow}>{EYES[step - 1]}</div>
               <div className={styles.modalTitle} dangerouslySetInnerHTML={{ __html: TITLES[step - 1] }} />
             </div>
-            <button type="button" className={styles.modalClose} onClick={onClose} aria-label="Cerrar"></button>
+            <button type="button" className={styles.modalClose} onClick={onClose} aria-label="Cerrar">
+              <svg aria-hidden="true" viewBox="0 0 20 20" className={styles.modalCloseIcon}>
+                <path d="m5 5 10 10M15 5 5 15" />
+              </svg>
+            </button>
           </div>
 
           <div className={styles.stepsRow}>
@@ -275,7 +279,9 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
 
               <div className={styles.accordion}>
                 <button type="button" className={styles.accHeader} onClick={() => setAccOpen((current) => !current)}>
-                  <div className={`${styles.accRadio} ${selQty ? styles.checked : ""}`} />
+                  <div className={`${styles.accRadio} ${selQty ? styles.checked : ""}`}>
+                    {selQty ? <span className={styles.innerDot} /> : null}
+                  </div>
                   <span className={styles.accLabel}>{selQty ? qtyLabel : "Seleccionar cantidad"}</span>
                   <span className={`${styles.accChevron} ${accOpen ? styles.open : ""}`}>▾</span>
                 </button>

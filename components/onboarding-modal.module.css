@@ -66,6 +66,15 @@
   transition: 160ms ease;
 }
 
+.modalCloseIcon {
+  height: 18px;
+  width: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
 .modalClose:hover {
   background: rgba(255, 255, 255, 0.09);
   color: rgba(255, 255, 255, 0.7);
@@ -189,8 +198,11 @@
 }
 
 .accRadio {
+  display: inline-flex;
   height: 22px;
   width: 22px;
+  align-items: center;
+  justify-content: center;
   border: 2px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
 }
@@ -198,7 +210,6 @@
 .accRadio.checked {
   border-color: #e32114;
   background: #e32114;
-  box-shadow: inset 0 0 0 10px #e32114, inset 0 0 0 14px #fff;
 }
 
 .accLabel {

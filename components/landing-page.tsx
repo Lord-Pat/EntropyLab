@@ -1,42 +1,14 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 import VideoBackground from "@/components/background/video-background"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import OnboardingModal from "@/components/onboarding-modal"
 
-function useInView(threshold = 0.25) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true)
-      },
-      { threshold }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [threshold])
-
-  return { ref, visible }
-}
-
 export default function LandingPage() {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
-  const scrollRef = useRef<HTMLElement>(null)
-  const s1 = useInView(0.1)
-  const s2 = useInView()
-  const s3 = useInView()
-
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = 0
-  }, [])
 
   useEffect(() => {
     if (!isOnboardingOpen) return
@@ -57,19 +29,12 @@ export default function LandingPage() {
     <>
       <Header onOpenOnboarding={openOnboarding} />
 
-      <main
-        ref={scrollRef}
-        className="h-screen snap-y snap-mandatory overflow-y-scroll"
-        style={{ scrollbarWidth: "none" }}
-      >
+      <main className="min-h-screen">
         {/* Section 1 — Hero */}
-        <section className="relative flex h-screen snap-start items-center overflow-hidden">
+        <section className="relative flex min-h-screen items-center overflow-hidden">
           <VideoBackground />
           <div
-            ref={s1.ref}
-            className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
-              s1.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
+            className="mx-auto w-full px-6"
             style={{ maxWidth: "1200px" }}
           >
             <div className="max-w-2xl lg:max-w-[100%]">
@@ -86,12 +51,9 @@ export default function LandingPage() {
         </section>
 
         {/* Section 2 — Three pillars */}
-        <section className="flex h-auto snap-start items-center border-y border-white/10 py-12.5" style={{ backgroundColor: "#111111" }}>
+        <section className="flex h-auto items-center border-y border-white/10 py-12.5" style={{ backgroundColor: "#111111" }}>
           <div
-            ref={s2.ref}
-            className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
-              s2.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
+            className="mx-auto w-full px-6"
             style={{ maxWidth: "1200px" }}
           >
             <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-16">
@@ -129,12 +91,9 @@ export default function LandingPage() {
         </section>
 
         {/* Section 3 — Sobre nosotros */}
-        <section id="sobre-nosotros" className="flex h-auto snap-start items-center border-y border-white/10 py-16" style={{ backgroundColor: "#1a1a1a" }}>
+        <section id="sobre-nosotros" className="flex h-auto items-center border-y border-white/10 py-16" style={{ backgroundColor: "#1a1a1a" }}>
           <div
-            ref={s3.ref}
-            className={`mx-auto w-full px-6 transition-all duration-700 ease-out ${
-              s3.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
+            className="mx-auto w-full px-6"
             style={{ maxWidth: "1200px" }}
           >
             <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-16">
