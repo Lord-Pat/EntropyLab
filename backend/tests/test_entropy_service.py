@@ -1,12 +1,10 @@
-
 import sys
 import os
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Prueba de la clase EntropyService de servicios.
-# Captura dos frames consecutivos de la ESP32, calcula la diferencia
-# entre ellos y aplica SHA-256 para obtener 32 bytes de entropía real.
+# Extrae dos muestras de entropía usando el algoritmo activo en config.py.
+# El número de frames capturados depende del algoritmo (2 o 3 según algorithms.json).
 # Uso: verificar que el servicio extrae entropía y que cada ejecución produce un resultado diferente (no determinista).
 
 from infrastructure.camera_reader import CameraReader

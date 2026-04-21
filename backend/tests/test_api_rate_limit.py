@@ -1,3 +1,10 @@
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+# Verifica que el rate limiting de la API funciona correctamente.
+# Requiere que el servidor esté corriendo en localhost:8000 (opción 5 del menú).
+
 import time
 import requests
 

@@ -1,10 +1,10 @@
 import sys
 import os
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Prueba de SQLiteRepository.
-# Guarda una clave, la recupera, verifica los métodos nuevos por versión y limpia.
+# Guarda una clave, la recupera, verifica los métodos por versión y limpia.
+# También verifica que las tablas de análisis existen correctamente.
 
 from infrastructure.sqlite_repository import SQLiteRepository
 from domain.key import Key
@@ -33,5 +33,11 @@ print(f"Claves de versión {ALGORITHM_VERSION}: {count}")
 
 repo.delete_keys_by_version(ALGORITHM_VERSION)
 print("Claves de esa versión eliminadas.")
+
+print("\n--- Verificando tablas de análisis ---")
+print(f"NIST results:            {len(repo.get_all_nist_results())} registros")
+print(f"Shannon results:         {len(repo.get_all_shannon_results())} registros")
+print(f"Autocorrelation results: {len(repo.get_all_autocorrelation_results())} registros")
+print(f"Maurer results:          {len(repo.get_all_maurer_results())} registros")
 
 repo.release()

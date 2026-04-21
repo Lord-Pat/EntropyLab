@@ -1,12 +1,12 @@
 import sys
 import os
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Prueba de KeyGeneratorService.
 # Genera tres GUIDs usando entropía física de la ESP32,
 # los guarda en SQLite y verifica que se recuperan correctamente.
 # Uso: verificar que el generador produce GUIDs distintos y bien formateados.
+# AVISO: este test borra todas las claves de la BD al finalizar. No ejecutar con datos de producción.
 
 from infrastructure.camera_reader import CameraReader
 from infrastructure.sqlite_repository import SQLiteRepository
@@ -38,7 +38,6 @@ print(f"Total guardadas: {len(keys)}")
 
 for k in keys:
     print(f"  [ID {k.key_id}] {k.value}")
-
 
 repo.clear_keys()
 print("Base de datos limpia.")
