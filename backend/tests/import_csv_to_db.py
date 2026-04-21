@@ -36,6 +36,26 @@ cursor.executescript("""
         shannon REAL NOT NULL,
         notes TEXT
     );
+    CREATE TABLE IF NOT EXISTS autocorrelation_results (
+        result_id TEXT PRIMARY KEY,
+        timestamp TEXT NOT NULL,
+        algorithm_version TEXT NOT NULL,
+        sample_size INTEGER NOT NULL,
+        lag1_correlation REAL NOT NULL,
+        lag1_p REAL NOT NULL,
+        lag8_correlation REAL NOT NULL,
+        lag8_p REAL NOT NULL,
+        notes TEXT
+    );
+    CREATE TABLE IF NOT EXISTS maurer_results (
+        result_id TEXT PRIMARY KEY,
+        timestamp TEXT NOT NULL,
+        algorithm_version TEXT NOT NULL,
+        sample_size INTEGER NOT NULL,
+        fn REAL NOT NULL,
+        p_value REAL NOT NULL,
+        notes TEXT
+    );
 """)
 conn.commit()
 
