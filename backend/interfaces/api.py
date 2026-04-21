@@ -112,3 +112,14 @@ def send_email(request: Request, cantidad: int = 1, formato: str = "json", email
             return JSONResponse(status_code=500, content={"error": result.json()})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
+    
+    @app.get("/keys/count")
+    def get_keys_count():
+        import sqlite3
+        from config import DB_PATH
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM keys")
+        total = cursor.fetchone()[0]
+        conn.close()
+        return {"total": total}
