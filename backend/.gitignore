@@ -4,3 +4,5 @@ email2.env
 exports/
 __pycache__/
 *.pyc
+*.db
+*.db-journal

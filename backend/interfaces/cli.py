@@ -136,6 +136,8 @@ class CLI:
 
         nist_results = self.repo.get_all_nist_results()
         shannon_results = self.repo.get_all_shannon_results()
+        autocorr_results = self.repo.get_all_autocorrelation_results()
+        maurer_results = self.repo.get_all_maurer_results()
 
         if nist_results:
             print(f"\n  Análisis NIST guardados: {len(nist_results)}")
@@ -145,6 +147,16 @@ class CLI:
         if shannon_results:
             print(f"\n  Análisis Shannon guardados: {len(shannon_results)}")
             for r in shannon_results:
+                print(f"    [{r.algorithm_version}] {r.timestamp.strftime('%d/%m %H:%M')} — {r.notes or 'sin notas'}")
+
+        if autocorr_results:
+            print(f"\n  Análisis Autocorrelación guardados: {len(autocorr_results)}")
+            for r in autocorr_results:
+                print(f"    [{r.algorithm_version}] {r.timestamp.strftime('%d/%m %H:%M')} — {r.notes or 'sin notas'}")
+
+        if maurer_results:
+            print(f"\n  Análisis Maurer guardados: {len(maurer_results)}")
+            for r in maurer_results:
                 print(f"    [{r.algorithm_version}] {r.timestamp.strftime('%d/%m %H:%M')} — {r.notes or 'sin notas'}")
 
     def _salir(self):

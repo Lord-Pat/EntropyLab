@@ -5,6 +5,8 @@ from domain.key import Key
 from domain.nist_result import NistResult
 from domain.shannon_result import ShannonResult
 from config import DB_PATH
+from domain.autocorrelation_result import AutocorrelationResult
+from domain.maurer_result import MaurerResult
 
 class SQLiteRepository:
 
@@ -39,6 +41,7 @@ class SQLiteRepository:
                 notes TEXT
             )
         """)
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS shannon_results (
                 result_id TEXT PRIMARY KEY,
@@ -46,6 +49,32 @@ class SQLiteRepository:
                 algorithm_version TEXT NOT NULL,
                 sample_size INTEGER NOT NULL,
                 shannon REAL NOT NULL,
+                notes TEXT
+            )
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS autocorrelation_results (
+                result_id TEXT PRIMARY KEY,
+                timestamp TEXT NOT NULL,
+                algorithm_version TEXT NOT NULL,
+                sample_size INTEGER NOT NULL,
+                lag1_correlation REAL NOT NULL,
+                lag1_p REAL NOT NULL,
+                lag8_correlation REAL NOT NULL,
+                lag8_p REAL NOT NULL,
+                notes TEXT
+            )
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS maurer_results (
+                result_id TEXT PRIMARY KEY,
+                timestamp TEXT NOT NULL,
+                algorithm_version TEXT NOT NULL,
+                sample_size INTEGER NOT NULL,
+                fn REAL NOT NULL,
+                p_value REAL NOT NULL,
                 notes TEXT
             )
         """)
@@ -172,6 +201,72 @@ class SQLiteRepository:
             sample_size=r[3],
             shannon=r[4],
             notes=r[5]
+        ) for r in rows]
+    
+    def save_autocorrelation_result(self, result):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT INTO autocorrelation_results
+            (result_id, timestamp, algorithm_version, sample_size, lag1_correlation, lag1_p, lag8_correlation, lag8_p, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            result.result_id,
+            result.timestamp.isoformat(),
+            result.algorithm_version,
+            result.sample_size,
+            result.lag1_correlation,
+            result.lag1_p,
+            result.lag8_correlation,
+            result.lag8_p,
+            result.notes
+        ))
+        self.conn.commit()
+
+    def get_all_autocorrelation_results(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT result_id, timestamp, algorithm_version, sample_size, lag1_correlation, lag1_p, lag8_correlation, lag8_p, notes FROM autocorrelation_results ORDER BY timestamp")
+        rows = cursor.fetchall()
+        return [AutocorrelationResult(
+            result_id=r[0],
+            timestamp=datetime.fromisoformat(r[1]),
+            algorithm_version=r[2],
+            sample_size=r[3],
+            lag1_correlation=r[4],
+            lag1_p=r[5],
+            lag8_correlation=r[6],
+            lag8_p=r[7],
+            notes=r[8]
+        ) for r in rows]
+
+    def save_maurer_result(self, result):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT INTO maurer_results
+            (result_id, timestamp, algorithm_version, sample_size, fn, p_value, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            result.result_id,
+            result.timestamp.isoformat(),
+            result.algorithm_version,
+            result.sample_size,
+            result.fn,
+            result.p_value,
+            result.notes
+        ))
+        self.conn.commit()
+
+    def get_all_maurer_results(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT result_id, timestamp, algorithm_version, sample_size, fn, p_value, notes FROM maurer_results ORDER BY timestamp")
+        rows = cursor.fetchall()
+        return [MaurerResult(
+            result_id=r[0],
+            timestamp=datetime.fromisoformat(r[1]),
+            algorithm_version=r[2],
+            sample_size=r[3],
+            fn=r[4],
+            p_value=r[5],
+            notes=r[6]
         ) for r in rows]
 
     def clear_keys(self):
