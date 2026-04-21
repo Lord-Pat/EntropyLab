@@ -7,9 +7,10 @@ import sqlite3
 from config import DB_PATH
 
 CSV_DIR = os.path.join(os.path.dirname(__file__), '..', 'exports')
+DB_PATH_ABS = os.path.join(os.path.dirname(__file__), '..', DB_PATH)
 VERSIONES = ["0.1.0", "0.2.0", "0.3.0", "0.4.0"]
 
-conn = sqlite3.connect(DB_PATH)
+conn = sqlite3.connect(DB_PATH_ABS)
 cursor = conn.cursor()
 
 cursor.executescript("""
@@ -79,6 +80,12 @@ for version in VERSIONES:
     )
     conn.commit()
     print(f"  ✓ {len(filas)} claves importadas para versión {version}")
+
+cursor.execute("SELECT algorithm_version, COUNT(*) FROM keys GROUP BY algorithm_version")
+rows = cursor.fetchall()
+print("\nVerificación BD:")
+for row in rows:
+    print(f"  {row[0]}: {row[1]:,} claves")
 
 conn.close()
 print("\nImportación completada.")
