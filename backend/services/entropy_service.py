@@ -3,9 +3,6 @@ from config import ALGORITHM_VERSION
 import time
 import json
 import os
-
-ALGORITMOS_TRES_FRAMES = ["0_4_0"]
-
 class EntropyService:
 
     def __init__(self, camera_reader):
