@@ -19,10 +19,10 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
-
 key_svc = None
 
 def init(k):
@@ -113,13 +113,13 @@ def send_email(request: Request, cantidad: int = 1, formato: str = "json", email
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
     
-    @app.get("/keys/count")
-    def get_keys_count():
-        import sqlite3
-        from config import DB_PATH
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM keys")
-        total = cursor.fetchone()[0]
-        conn.close()
-        return {"total": total}
+@app.get("/keys/count")
+def get_keys_count():
+    import sqlite3
+    from config import DB_PATH
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM keys")
+    total = cursor.fetchone()[0]
+    conn.close()
+    return {"total": total}
