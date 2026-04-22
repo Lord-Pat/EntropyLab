@@ -8,11 +8,9 @@ import styles from "./onboarding-modal.module.css"
 type OnboardingModalProps = {
   isOpen: boolean
   onClose: () => void
+  onSuccess?: (quantity: number) => void
 }
 
-type OnboardingResponse = {
-  message?: string
-}
 
 const TITLES = [
   "&iquest;Cu&aacute;ntas claves necesitas?",
@@ -29,7 +27,7 @@ const quantityOptions = [1, 5, 10, 15, 20]
 type ExportType = "csv" | "json" | "txt" | null
 type DeliveryType = "download" | "email" | null
 
-export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
+export default function OnboardingModal({ isOpen, onClose, onSuccess }: OnboardingModalProps) {
   const [step, setStep] = useState(1)
   const [selQty, setSelQty] = useState<number | null>(null)
   const [selExport, setSelExport] = useState<ExportType>(null)
@@ -83,72 +81,6 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
     return null
   }
 
-  const downloadBlob = (blob: Blob, filename: string) => {
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = filename
-    link.click()
-    URL.revokeObjectURL(url)
-  }
-
-  const getFilenameFromHeaders = (response: Response, fallbackFilename: string) => {
-    const contentDisposition = response.headers.get("content-disposition")
-    const match = contentDisposition?.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i)
-
-    if (!match?.[1]) {
-      return fallbackFilename
-    }
-
-    return decodeURIComponent(match[1].replace(/"/g, ""))
-  }
-
-  const submitOnboarding = async () => {
-    const quantity = selQty ?? 1
-    const format = selExport ?? "txt"
-    const delivery = selDelivery ?? "download"
-    const fallbackFilename = `entropylab-keys-${Date.now()}.${format}`
-
-    const response = await fetch("/api/onboarding", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        quantity,
-        format,
-        delivery,
-        email: delivery === "email" ? email : undefined,
-      }),
-    })
-
-    if (!response.ok) {
-      let message = "No se pudo completar la solicitud."
-
-      try {
-        const errorPayload = (await response.json()) as { error?: string }
-        if (errorPayload.error) {
-          message = errorPayload.error
-        }
-      } catch {
-        // Si la API no devuelve JSON, mantenemos un mensaje genérico.
-      }
-
-      throw new Error(message)
-    }
-
-    const contentType = response.headers.get("content-type") ?? ""
-    const shouldDownload = delivery === "download" || !contentType.includes("application/json")
-
-    if (shouldDownload) {
-      const blob = await response.blob()
-      downloadBlob(blob, getFilenameFromHeaders(response, fallbackFilename))
-      return null
-    }
-
-    return (await response.json()) as OnboardingResponse
-  }
-
   const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   const goNext = async () => {
@@ -190,6 +122,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
           if (!response.ok) throw new Error("Error enviando email")
         }
 
+        onSuccess?.(selQty ?? 1)
         toast.success(`${selQty ?? 1} clave${(selQty ?? 1) > 1 ? "s" : ""} generada${(selQty ?? 1) > 1 ? "s" : ""} correctamente`)
         setIsSuccess(true)
 

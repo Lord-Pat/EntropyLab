@@ -1,14 +1,82 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import VideoBackground from "@/components/background/video-background"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import OnboardingModal from "@/components/onboarding-modal"
+import { traverseGenerator } from "three/examples/jsm/utils/SceneUtils.js"
+
+function useCountUp(target: number) {
+  const [count, setCount] = useState(0)
+  const [ref, setRef] = useState<HTMLDivElement | null>(null)
+  const currentCount = useRef(0)
+  const hasStarted = useRef(false)
+
+  const animateTo = (from: number, to: number, duration: number) => {
+    const startTime = performance.now()
+    const tick = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1)
+      const value = Math.floor(from + progress * (to - from))
+      currentCount.current = value
+      setCount(value)
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }
+
+  useEffect(() => {
+    if (!ref) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || hasStarted.current) return
+        observer.disconnect()
+        hasStarted.current = true
+        animateTo(0, target, 1500)
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(ref)
+    return () => observer.disconnect()
+  }, [ref, target])
+
+  useEffect(() => {
+    if (!hasStarted.current) return
+    animateTo(currentCount.current, target, 1500)
+  }, [target])
+
+  return { count, setRef }
+}
 
 export default function LandingPage() {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
+  const [totalKeys, setTotalKeys] = useState(0)
+  const { count, setRef: setCounterRef } = useCountUp(totalKeys)
+
+  const handleKeysGenerated = (quantity: number) => {
+    setTotalKeys((prev) => prev + quantity)
+  }
+
+  useEffect(() => {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual"
+    window.scrollTo(0, 0)
+
+    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL)
+
+fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/count`, {
+  headers: { "ngrok-skip-browser-warning": "true" }
+})
+  .then((res) => {
+    console.log("Response status:", res.status)
+    return res.json()
+  })
+  .then((data) => {
+    console.log("Data recibida:", data)
+    setTotalKeys(data.total)
+  })
+  .catch((err) => console.log("Error fetch:", err))
+}, [])
 
   useEffect(() => {
     if (!isOnboardingOpen) return
@@ -86,6 +154,19 @@ export default function LandingPage() {
                   para que cualquiera pueda auditarlo, replicarlo o construir sobre él.
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contenido Counter visual para clientes */}
+        <section className="flex h-auto items-center border-y border-white/10 py-12.5" style={{ backgroundColor: "#111111" }}>
+          <div
+            className="mx-auto w-full px-6"
+            style={{ maxWidth: "1200px" }}
+          > 
+            <div ref={setCounterRef}>
+              <h3 className="font-bold text-white text-center" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>Claves generadas</h3>
+              <p className="text-center text-red-400 text-5xl font-bold mt-4">{count.toLocaleString()}</p>
             </div>
           </div>
         </section>
@@ -192,6 +273,7 @@ export default function LandingPage() {
       <OnboardingModal
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
+        onSuccess={handleKeysGenerated}
       />
     </>
   )

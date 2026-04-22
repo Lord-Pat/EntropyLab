@@ -25,12 +25,20 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
           </div>
         </Link>
 
-        <nav className="flex flex-wrap items-center gap-4 sm:gap-6 md:justify-end">
+        <nav className="flex flex-wrap items-center gap-4 sm:gap-6 md:justify-end"> 
           <a
             href="/#sobre-nosotros"
             className="text-sm font-medium text-white outline-none transition-colors hover:text-red-400"
           >
             Sobre nosotros
+          </a>
+            <a
+            href="https://traditionless-oretha-roundedly.ngrok-free.dev/docs#/"
+            target="blank"
+            rel="noreferrer"
+            className = "text-sm font-medium text-white outline-none transition-colors hover:text-red-400"
+            >
+            Para desarrolladores
           </a>
           <a
             href="https://github.com/Lord-Pat/EntropyLab"
