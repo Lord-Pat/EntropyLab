@@ -64,14 +64,22 @@ export default function LandingPage() {
 
   useEffect(() => {
     let active = true
-    const controller = new AbortController()
+    let retryTimeout: ReturnType<typeof setTimeout>
+    let currentController: AbortController | null = null
 
     async function connectSSE() {
+      currentController = new AbortController()
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/count/stream`, {
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/keys/count/stream`
+        const res = await fetch(url, {
           headers: { "ngrok-skip-browser-warning": "true" },
-          signal: controller.signal,
+          signal: currentController.signal,
         })
+        if (!res.ok) {
+          console.error(`[SSE] ${url} → ${res.status} ${res.statusText}`)
+          if (active) retryTimeout = setTimeout(connectSSE, 5000)
+          return
+        }
         if (!res.body) return
         const reader = res.body.getReader()
         const decoder = new TextDecoder()
@@ -90,14 +98,16 @@ export default function LandingPage() {
           }
         }
       } catch {
-        // conexión cerrada o abortada
+        // abortado o caído
       }
+      if (active) retryTimeout = setTimeout(connectSSE, 5000)
     }
 
     connectSSE()
     return () => {
       active = false
-      controller.abort()
+      clearTimeout(retryTimeout)
+      currentController?.abort()
     }
   }, [])
 
@@ -128,11 +138,11 @@ export default function LandingPage() {
             className="mx-auto w-full px-6"
             style={{ maxWidth: "1200px" }}
           >
-            <div className="max-w-2xl lg:max-w-[100%]">
-              <h1 className="text-center font-black leading-[1em] text-white" style={{ fontSize: "6em", letterSpacing: "-0.04em", textShadow: "0px 0px 7px rgba(10,10,10,0.97)" }}>
+            <div className="max-w-2xl lg:max-w-full">
+              <h1 className="text-center font-black leading-[1em] text-white" style={{ fontSize: "clamp(2rem, 8vw, 6rem)", letterSpacing: "-0.04em", textShadow: "0px 0px 7px rgba(10,10,10,0.97)" }}>
                 Claves generadas a través de la aleatoriedad de la lava
               </h1>
-              <p className="mt-6 text-gray-300" style={{ textAlign: "center", fontSize: "1.5em", fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1em", textShadow: "0px 0px 7px rgba(10,10,10,0.97)" }}>
+              <p className="mt-6 text-gray-300" style={{ textAlign: "center", fontSize: "clamp(1rem, 2.5vw, 1.5rem)", fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.4em", textShadow: "0px 0px 7px rgba(10,10,10,0.97)" }}>
                 EntropyLab captura el movimiento impredecible de l&aacute;mparas de lava para
                 generar <span style={{ fontWeight: 700 }}>claves criptogr&aacute;ficas de alta entrop&iacute;a</span>. Sin algoritmos, sin
                 patrones: entrop&iacute;a f&iacute;sica pura. 100% open source.
@@ -149,7 +159,7 @@ export default function LandingPage() {
           >
             <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-16">
               <div className="flex flex-col text-left">
-                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>Entropía física, no algoritmos</h3>
+                <h3 className="font-bold text-white" style={{ fontSize: "clamp(1.25rem, 3vw, 2rem)", lineHeight: "1.1em", letterSpacing: "-0.03em" }}>Entropía física, no algoritmos</h3>
                 <hr style={{ borderColor: "#fafafa", borderWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
                 <p className="text-base text-gray-300" style={{ fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.3em" }}>
                   El movimiento caótico de la lava dentro de una lámpara es imposible de predecir o replicar. 
@@ -158,7 +168,7 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="flex flex-col text-left">
-                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>
+                <h3 className="font-bold text-white" style={{ fontSize: "clamp(1.25rem, 3vw, 2rem)", lineHeight: "1.1em", letterSpacing: "-0.03em" }}>
                   Validadas con estándares científicos
                 </h3>
                 <hr style={{ borderColor: "#fafafa", borderTopWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
@@ -169,7 +179,7 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="flex flex-col text-left">
-                <h3 className="font-bold text-white" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>Construido en abierto, para todos</h3>
+                <h3 className="font-bold text-white" style={{ fontSize: "clamp(1.25rem, 3vw, 2rem)", lineHeight: "1.1em", letterSpacing: "-0.03em" }}>Construido en abierto, para todos</h3>
                 <hr style={{ borderColor: "#fafafa", borderTopWidth: "0.5px", marginTop: "25px", marginBottom: "25px" }} />
                 <p className="text-base text-gray-300" style={{ fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.3em" }}>
                   EntropyLab nació con la convicción de que la seguridad real no puede depender de cajas negras. Por eso todo lo que construimos es público:
@@ -188,8 +198,8 @@ export default function LandingPage() {
             style={{ maxWidth: "1200px" }}
           > 
             <div ref={setCounterRef}>
-              <h3 className="font-bold text-white text-center" style={{ fontSize: "2em", lineHeight: "1em", letterSpacing: "-0.03em" }}>Claves generadas</h3>
-              <p className="text-center text-red-400 text-5xl font-bold mt-4">{count.toLocaleString()}</p>
+              <h3 className="font-bold text-white text-center" style={{ fontSize: "clamp(1.25rem, 3vw, 2rem)", lineHeight: "1.1em", letterSpacing: "-0.03em" }}>Claves generadas</h3>
+              <p className="text-center text-red-400 font-bold mt-4" style={{ fontSize: "clamp(2rem, 6vw, 3rem)" }}>{count.toLocaleString()}</p>
             </div>
           </div>
         </section>
@@ -217,7 +227,7 @@ export default function LandingPage() {
 
                 {/* Aarón */}
                 <div className="flex flex-col">
-                  <h3 className="font-bold text-white" style={{ fontSize: "1.5em", letterSpacing: "-0.03em" }}>
+                  <h3 className="font-bold text-white" style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)", letterSpacing: "-0.03em" }}>
                     Aarón Martínez
                   </h3>
                   <p className="mt-2 text-gray-400" style={{ fontWeight: 200, letterSpacing: "-0.02em", lineHeight: "1.5em", fontSize: "0.95em" }}>
@@ -253,7 +263,7 @@ export default function LandingPage() {
 
                 {/* Patrick */}
                 <div className="flex flex-col">
-                  <h3 className="font-bold text-white" style={{ fontSize: "1.5em", letterSpacing: "-0.03em" }}>
+                  <h3 className="font-bold text-white" style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)", letterSpacing: "-0.03em" }}>
                     Patrick Carbajal
                   </h3>
                   <p className="mt-2 text-gray-400" style={{ fontWeight: 200, letterSpacing: "-0.02em", lineHeight: "1.5em", fontSize: "0.95em" }}>
