@@ -252,6 +252,22 @@ Genera claves y las envía como adjunto al email indicado.
 
 **Límite:** 5 peticiones por minuto por IP.
 
+### `GET /keys/count`
+
+Devuelve el total de claves generadas acumuladas en la base de datos.
+
+**Ejemplo:**
+```
+GET /keys/count
+```
+
+**Respuesta:**
+```json
+{ "total": 391610 }
+```
+
+Sin límite de peticiones.
+
 > Documentación interactiva disponible en `http://localhost:8000/docs`.
 
 ---
@@ -292,6 +308,37 @@ Los resultados de los cuatro análisis se guardan en tablas separadas de la base
 Los resultados completos del análisis estadístico por versión de algoritmo están documentados en la memoria del proyecto.
 
 En resumen, todos los algoritmos superan los tests NIST SP800-22 con muestras de 100.000+ claves. v0.4.0 falla el test de Maurer's Universal, lo que indica que el XOR de tres frames introduce estructura compresible en la secuencia. v0.2.0 ofrece los mejores resultados globales.
+
+---
+
+## Frontend
+
+La interfaz web está construida en Next.js con React y TypeScript, desplegada en Vercel.
+
+### Stack
+
+| Tecnología | Uso |
+|------------|-----|
+| Next.js / React | Framework principal de la aplicación web |
+| TypeScript | Tipado estático del código frontend |
+| Tailwind CSS | Estilos y diseño visual |
+
+### Variables de entorno
+
+Crea un fichero `.env.local` en la raíz del frontend:
+
+```
+NEXT_PUBLIC_API_URL=https://xxxx.ngrok-free.app
+```
+
+### Funcionalidades
+
+- Landing page con vídeo de fondo y animación de entrada
+- Contador de claves generadas en tiempo real desde la API
+- Onboarding de 4 pasos para solicitar claves (cantidad, formato, método de entrega)
+- Descarga directa en JSON, CSV o TXT
+- Envío por email con adjunto
+- Sección "Sobre nosotros" con perfiles del equipo
 
 ---
 
