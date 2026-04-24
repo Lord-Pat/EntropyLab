@@ -6,7 +6,7 @@ load_dotenv()
 
 
 # ── Cámara ────────────────────────────────────────────
-STREAM_URL = "http://192.168.33.179/video"
+STREAM_URL = "http://192.168.32.148/video"
 
 # ── Base de datos ─────────────────────────────────────
 DB_PATH = "entropylab.db"
