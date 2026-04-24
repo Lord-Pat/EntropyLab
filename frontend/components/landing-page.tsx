@@ -6,7 +6,6 @@ import VideoBackground from "@/components/background/video-background"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import OnboardingModal from "@/components/onboarding-modal"
-import { traverseGenerator } from "three/examples/jsm/utils/SceneUtils.js"
 
 function useCountUp(target: number) {
   const [count, setCount] = useState(0)
@@ -61,22 +60,46 @@ export default function LandingPage() {
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual"
     window.scrollTo(0, 0)
+  }, [])
 
-    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL)
+  useEffect(() => {
+    let active = true
+    const controller = new AbortController()
 
-fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/count`, {
-  headers: { "ngrok-skip-browser-warning": "true" }
-})
-  .then((res) => {
-    console.log("Response status:", res.status)
-    return res.json()
-  })
-  .then((data) => {
-    console.log("Data recibida:", data)
-    setTotalKeys(data.total)
-  })
-  .catch((err) => console.log("Error fetch:", err))
-}, [])
+    async function connectSSE() {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/keys/count/stream`, {
+          headers: { "ngrok-skip-browser-warning": "true" },
+          signal: controller.signal,
+        })
+        if (!res.body) return
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ""
+        while (active) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split("\n")
+          buffer = lines.pop() ?? ""
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const total = parseInt(line.slice(6), 10)
+              if (!isNaN(total)) setTotalKeys(total)
+            }
+          }
+        }
+      } catch {
+        // conexión cerrada o abortada
+      }
+    }
+
+    connectSSE()
+    return () => {
+      active = false
+      controller.abort()
+    }
+  }, [])
 
   useEffect(() => {
     if (!isOnboardingOpen) return
