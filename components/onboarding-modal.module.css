@@ -1,0 +1,533 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.74);
+}
+
+.open {
+  opacity: 1;
+}
+
+.modal {
+  width: min(560px, calc(100vw - 64px));
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  background: #161616;
+  color: #f5f5f5;
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.45);
+}
+
+.modalHeader {
+  padding: 20px 24px 0;
+}
+
+.modalToprow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.modalEyebrow {
+  color: #ff3b30;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.modalTitle {
+  margin-top: 8px;
+  font-size: clamp(0.94rem, 1.2vw, 1.1rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.modalClose {
+  display: inline-flex;
+  height: 38px;
+  width: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.modalCloseIcon {
+  height: 18px;
+  width: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.modalClose:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stepsRow {
+  display: flex;
+  align-items: center;
+  margin-top: 18px;
+  overflow-x: auto;
+}
+
+.stepGroup {
+  display: flex;
+  align-items: center;
+  flex: 1 0 auto;
+}
+
+.stepPill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.24);
+  white-space: nowrap;
+}
+
+.stepPill.active,
+.stepPill.done {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.stepCircle {
+  display: inline-flex;
+  height: 28px;
+  width: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.stepCircle.active {
+  border-color: #ff3b30;
+  color: #ff3b30;
+}
+
+.stepCircle.done {
+  border-color: #e32114;
+  background: #e32114;
+  color: #fff;
+}
+
+.stepCheck {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stepLabel {
+  font-size: 0.78rem;
+}
+
+.stepConnector {
+  flex: 1 1 44px;
+  min-width: 14px;
+  height: 1px;
+  margin: 0 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.divider {
+  height: 1px;
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.modalBody {
+  padding: 18px 24px;
+}
+
+.stepPanel {
+  display: none;
+}
+
+.stepPanel.active {
+  display: block;
+}
+
+.stepSub {
+  max-width: 660px;
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.accordion {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: #1b1b1b;
+}
+
+.accHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.accRadio {
+  display: inline-flex;
+  height: 22px;
+  width: 22px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+.accRadio.checked {
+  border-color: #e32114;
+  background: #e32114;
+}
+
+.accLabel {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.accChevron {
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 0.9rem;
+  transition: transform 160ms ease;
+}
+
+.accChevron.open {
+  transform: rotate(180deg);
+}
+
+.accBody {
+  display: none;
+  padding: 0 18px 18px;
+}
+
+.accBody.open {
+  display: block;
+}
+
+.qtyGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.qtyOpt {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: #141414;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 6px;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.qtyOpt:hover,
+.qtyOpt.selected {
+  border-color: #e32114;
+  background: rgba(227, 33, 20, 0.14);
+  color: #fff;
+}
+
+.exportGrid,
+.exportGridNoMargin {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.exportOpt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 74px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: #1b1b1b;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.exportOpt:hover,
+.exportOpt.selected {
+  border-color: rgba(227, 33, 20, 0.55);
+  background: rgba(227, 33, 20, 0.08);
+}
+
+.spanTwo {
+  grid-column: span 2;
+}
+
+.exportIcon {
+  display: inline-flex;
+  height: 34px;
+  width: 34px;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #222;
+}
+
+.exportName {
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.exportDesc {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 0.76rem;
+}
+
+.exportCheck {
+  margin-left: auto;
+  display: inline-flex;
+  height: 16px;
+  width: 16px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+
+.checked {
+  border-color: #e32114;
+  background: #e32114;
+}
+
+.innerDot {
+  height: 6px;
+  width: 6px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.emailFieldWrap {
+  margin-top: 10px;
+}
+
+.emailLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 0.82rem;
+}
+
+.emailInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: #1b1b1b;
+  color: #fff;
+  font-size: 0.88rem;
+}
+
+.emailInput::placeholder {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+.confirmCard {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: #1b1b1b;
+}
+
+.confirmRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.confirmRow:last-child {
+  border-bottom: 0;
+}
+
+.confirmKey {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.8rem;
+}
+
+.confirmVal {
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.confirmEmail {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+}
+
+.confirmBadge {
+  border: 1px solid rgba(71, 208, 124, 0.2);
+  border-radius: 999px;
+  background: rgba(31, 84, 50, 0.55);
+  color: #4edf84;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+}
+
+.confirmNotice {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(227, 33, 20, 0.14);
+  border-radius: 16px;
+  background: #381414;
+  color: #ff9890;
+  font-size: 0.82rem;
+  line-height: 1.42;
+}
+
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 24px 18px;
+}
+
+.btnBack {
+  min-width: 146px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.84rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+}
+
+.btnNext {
+  flex: 1;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: #c51f14;
+  color: #f4f4f4;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 160ms ease;
+  outline: none;
+}
+
+.btnNext:disabled {
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.btnNext:not(:disabled):hover {
+  background: #e12519;
+  color: #fff;
+}
+
+.success {
+  background: #196c3a;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .modalHeader,
+  .modalBody,
+  .modalFooter {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .modalToprow {
+    align-items: flex-start;
+  }
+
+  .modalClose {
+    height: 42px;
+    width: 42px;
+    font-size: 1.7rem;
+  }
+
+  .stepsRow {
+    gap: 14px;
+  }
+
+  .stepConnector {
+    display: none;
+  }
+
+  .qtyGrid,
+  .exportGrid,
+  .exportGridNoMargin {
+    grid-template-columns: 1fr;
+  }
+
+  .spanTwo {
+    grid-column: auto;
+  }
+
+  .exportOpt {
+    padding: 20px;
+  }
+
+  .confirmRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .confirmVal {
+    text-align: left;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+  }
+
+  .btnBack,
+  .btnNext {
+    width: 100%;
+  }
+}
