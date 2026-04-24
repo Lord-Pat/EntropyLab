@@ -19,6 +19,7 @@ Los resultados son validados con los tests estadísticos **NIST SP800-22**, **en
 - [API REST](#api-rest)
 - [Análisis estadístico](#análisis-estadístico)
 - [Resultados](#resultados)
+- [Frontend](#frontend)
 - [Autores](#autores)
 
 ---
@@ -27,41 +28,46 @@ Los resultados son validados con los tests estadísticos **NIST SP800-22**, **en
 
 ```
 EntropyLab/
-└── backend/
-    ├── config.py                        ← configuración global
-    ├── main.py                          ← punto de entrada
-    ├── domain/
-    │   ├── entropy_frame.py             ← frame capturado por la cámara
-    │   ├── key.py                       ← clave criptográfica generada
-    │   ├── nist_result.py               ← resultado análisis NIST
-    │   ├── shannon_result.py            ← resultado análisis Shannon
-    │   ├── autocorrelation_result.py    ← resultado autocorrelación serial
-    │   └── maurer_result.py             ← resultado Maurer's Universal Test
-    ├── infrastructure/
-    │   ├── camera_reader.py             ← captura frames via OpenCV
-    │   ├── sqlite_repository.py         ← persistencia en SQLite
-    │   └── csv_exporter.py             ← exportación a CSV
-    ├── services/
-    │   ├── entropy_service.py           ← extrae entropía de los frames
-    │   ├── key_generator_service.py     ← genera GUIDs desde entropía
-    │   ├── analysis_service.py          ← gestor de análisis estadístico
-    │   ├── algorithms/
-    │   │   ├── algorithms.json          ← especificaciones de cada algoritmo
-    │   │   ├── v0_1_0.py               ← SHA-256 de diff entre 2 frames
-    │   │   ├── v0_2_0.py               ← igual que v0.1.0 (lámpara nueva)
-    │   │   ├── v0_3_0.py               ← selección zonas activas (percentil 75)
-    │   │   └── v0_4_0.py               ← XOR de diffs entre 3 frames
-    │   └── analyzers/
-    │       ├── nist_analyzer.py         ← tests NIST SP800-22
-    │       ├── shannon_analyzer.py      ← entropía de Shannon
-    │       ├── autocorrelation_analyzer.py ← autocorrelación serial
-    │       └── maurer_analyzer.py       ← Maurer's Universal Test
-    └── interfaces/
-        ├── cli.py                       ← menú de control por consola
-        └── api.py                       ← API REST con FastAPI
+├── README.md
+├── backend/
+│   ├── config.py                        ← configuración global
+│   ├── main.py                          ← punto de entrada
+│   ├── domain/
+│   │   ├── entropy_frame.py             ← frame capturado por la cámara
+│   │   ├── key.py                       ← clave criptográfica generada
+│   │   ├── nist_result.py               ← resultado análisis NIST
+│   │   ├── shannon_result.py            ← resultado análisis Shannon
+│   │   ├── autocorrelation_result.py    ← resultado autocorrelación serial
+│   │   └── maurer_result.py             ← resultado Maurer's Universal Test
+│   ├── infrastructure/
+│   │   ├── camera_reader.py             ← captura frames via OpenCV
+│   │   ├── sqlite_repository.py         ← persistencia en SQLite
+│   │   └── csv_exporter.py             ← exportación a CSV
+│   ├── services/
+│   │   ├── entropy_service.py           ← extrae entropía de los frames
+│   │   ├── key_generator_service.py     ← genera GUIDs desde entropía
+│   │   ├── analysis_service.py          ← gestor de análisis estadístico
+│   │   ├── algorithms/
+│   │   │   ├── algorithms.json          ← especificaciones de cada algoritmo
+│   │   │   ├── v0_1_0.py               ← SHA-256 de diff entre 2 frames
+│   │   │   ├── v0_2_0.py               ← igual que v0.1.0 (lámpara nueva)
+│   │   │   ├── v0_3_0.py               ← selección zonas activas (percentil 75)
+│   │   │   └── v0_4_0.py               ← XOR de diffs entre 3 frames
+│   │   └── analyzers/
+│   │       ├── nist_analyzer.py         ← tests NIST SP800-22
+│   │       ├── shannon_analyzer.py      ← entropía de Shannon
+│   │       ├── autocorrelation_analyzer.py ← autocorrelación serial
+│   │       └── maurer_analyzer.py       ← Maurer's Universal Test
+│   ├── interfaces/
+│   │   ├── cli.py                       ← menú de control por consola
+│   │   └── api.py                       ← API REST con FastAPI
+│   └── tests/                           ← scripts de prueba y utilidades
+└── frontend/                            ← aplicación Next.js
 ```
 
-**Stack:** Python · OpenCV · FastAPI · SQLite · MicroPython (ESP32)
+**Stack backend:** Python · OpenCV · FastAPI · SQLite · MicroPython (ESP32)
+
+**Stack frontend:** Next.js · React · TypeScript · Tailwind CSS
 
 **Hardware:** Freenove ESP32-WROVER-CAM con sensor OV2640. Stream MJPEG en `http://[IP]/video`.
 
@@ -72,6 +78,7 @@ EntropyLab/
 ### Software
 - Python 3.8 o superior
 - pip
+- Node.js 18 o superior (para el frontend)
 
 ### Hardware
 - Freenove ESP32-WROVER-CAM (o compatible con stream MJPEG)
@@ -93,6 +100,8 @@ slowapi
 ---
 
 ## Instalación
+
+### Backend
 
 **1. Clona el repositorio:**
 
@@ -129,6 +138,34 @@ MAILJET_SECRET_KEY=tu_secret_key
 ```
 
 > El `.env` está en `.gitignore` y nunca se sube al repositorio.
+
+### Frontend
+
+**1. Accede a la carpeta del frontend:**
+
+```bash
+cd EntropyLab/frontend
+```
+
+**2. Instala las dependencias:**
+
+```bash
+npm install
+```
+
+**3. Configura las variables de entorno:**
+
+Crea un fichero `.env.local` con el siguiente contenido:
+
+```
+NEXT_PUBLIC_API_URL=https://xxxx.ngrok-free.app
+```
+
+**4. Arranca el servidor de desarrollo:**
+
+```bash
+npm run dev
+```
 
 ---
 
@@ -176,7 +213,7 @@ El menú de control aparece en la consola:
 
 1. **Opción 1** — inicia la generación masiva. El sistema genera claves en un hilo separado hasta alcanzar el límite configurado (por defecto 100.000) o hasta que lo pares manualmente.
 2. **Opción 2** — para la generación en cualquier momento.
-3. **Opción 4** — ejecuta el análisis estadístico completo (NIST + Shannon) sobre las claves acumuladas y guarda los resultados en la base de datos.
+3. **Opción 4** — ejecuta el análisis estadístico completo (NIST + Shannon + Autocorrelación + Maurer) sobre las claves acumuladas y guarda los resultados en la base de datos.
 4. **Opción 3** — exporta las claves a CSV. Al exportar pregunta si deseas borrarlas de la BD para liberar espacio antes del siguiente ciclo.
 5. **Opción 5** — arranca el servidor API REST en `http://localhost:8000`.
 
@@ -186,13 +223,13 @@ El menú de control aparece en la consola:
 ngrok http 8000
 ```
 
-Copia la URL generada (`https://xxxx.ngrok-free.app`) y úsala como base URL en el frontend.
+Copia la URL generada (`https://xxxx.ngrok-free.app`) y úsala como `NEXT_PUBLIC_API_URL` en el frontend.
 
 ---
 
 ## Algoritmos
 
-Cada algoritmo vive en `services/algorithms/` y expone una función `extraer_entropia(frame1, frame2)` o `extraer_entropia(frame1, frame2, frame3)`. El número de frames que necesita cada algoritmo está definido en `algorithms.json`:
+Cada algoritmo vive en `services/algorithms/` y expone una función `extraer_entropia`. El número de frames que necesita cada algoritmo está definido en `algorithms.json`:
 
 ```json
 {
@@ -222,7 +259,7 @@ Para cambiar de algoritmo basta con actualizar `ALGORITHM_VERSION` en `config.py
 
 ## API REST
 
-El servidor expone dos endpoints en `http://localhost:8000`:
+El servidor expone los siguientes endpoints en `http://localhost:8000`:
 
 ### `POST /keys/generate`
 
@@ -254,12 +291,7 @@ Genera claves y las envía como adjunto al email indicado.
 
 ### `GET /keys/count`
 
-Devuelve el total de claves generadas acumuladas en la base de datos.
-
-**Ejemplo:**
-```
-GET /keys/count
-```
+Devuelve el total de claves generadas acumuladas en la base de datos. Útil para consultas puntuales.
 
 **Respuesta:**
 ```json
@@ -268,13 +300,24 @@ GET /keys/count
 
 Sin límite de peticiones.
 
+### `GET /keys/count/stream`
+
+Stream en tiempo real (SSE — Server-Sent Events) del total de claves generadas. La conexión se mantiene abierta y el servidor envía el contador actualizado automáticamente cada vez que se generan claves nuevas, sin necesidad de que el cliente haga peticiones periódicas. Envía un keepalive cada 25 segundos para mantener la conexión activa.
+
+**Formato de cada evento:**
+```
+data: 391610
+```
+
+**Uso recomendado para el frontend** — más eficiente que polling periódico con `/keys/count`.
+
 > Documentación interactiva disponible en `http://localhost:8000/docs`.
 
 ---
 
 ## Análisis estadístico
 
-El sistema ejecuta cuatro tipos de análisis sobre las claves generadas, todos accesibles desde la opción 4 del menú:
+El sistema ejecuta cuatro tipos de análisis sobre las claves generadas, todos accesibles desde la opción 4 del menú. Los resultados se guardan en tablas separadas de la base de datos para comparativa entre versiones.
 
 ### NIST SP800-22
 
@@ -299,13 +342,11 @@ Detecta dependencia entre bits separados por una distancia fija. Se ejecuta con 
 
 Mide cuánto se puede comprimir la secuencia. Una secuencia verdaderamente aleatoria es incompresible — valores de fn cercanos a 6.196 con p ≥ 0.01 indican buena aleatoriedad. Es el test más sensible a estructuras ocultas en la secuencia.
 
-Los resultados de los cuatro análisis se guardan en tablas separadas de la base de datos para comparativa entre versiones.
-
 ---
 
 ## Resultados
 
-Los resultados completos del análisis estadístico por versión de algoritmo están documentados en la memoria del proyecto.
+Los resultados completos del análisis estadístico por versión de algoritmo, incluyendo gráficas comparativas y conclusiones, están documentados en la memoria del proyecto.
 
 En resumen, todos los algoritmos superan los tests NIST SP800-22 con muestras de 100.000+ claves. v0.4.0 falla el test de Maurer's Universal, lo que indica que el XOR de tres frames introduce estructura compresible en la secuencia. v0.2.0 ofrece los mejores resultados globales.
 
@@ -323,21 +364,13 @@ La interfaz web está construida en Next.js con React y TypeScript, desplegada e
 | TypeScript | Tipado estático del código frontend |
 | Tailwind CSS | Estilos y diseño visual |
 
-### Variables de entorno
-
-Crea un fichero `.env.local` en la raíz del frontend:
-
-```
-NEXT_PUBLIC_API_URL=https://xxxx.ngrok-free.app
-```
-
 ### Funcionalidades
 
 - Landing page con vídeo de fondo y animación de entrada
-- Contador de claves generadas en tiempo real desde la API
+- Contador de claves generadas en tiempo real vía SSE (`/keys/count/stream`)
 - Onboarding de 4 pasos para solicitar claves (cantidad, formato, método de entrega)
 - Descarga directa en JSON, CSV o TXT
-- Envío por email con adjunto
+- Envío por email con adjunto vía Mailjet
 - Sección "Sobre nosotros" con perfiles del equipo
 
 ---
