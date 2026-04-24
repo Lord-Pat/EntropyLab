@@ -28,12 +28,6 @@ export default function Footer() {
           >
             Inicio
           </Link>
-          <Link
-            href="/sobre-nosotros"
-            className="text-xs text-teal-100 transition-colors hover:text-white"
-          >
-            Sobre Nosotros
-          </Link>
         </nav>
       </div>
     </footer>

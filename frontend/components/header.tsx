@@ -21,15 +21,6 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
         Sobre nosotros
       </a>
       <a
-        href="https://traditionless-oretha-roundedly.ngrok-free.dev/docs#/"
-        target="_blank"
-        rel="noreferrer"
-        onClick={() => setIsOpen(false)}
-        className="text-sm font-medium text-white outline-none transition-colors hover:text-red-400"
-      >
-        Para desarrolladores
-      </a>
-      <a
         href="https://github.com/Lord-Pat/EntropyLab"
         target="_blank"
         rel="noreferrer"
