@@ -53,10 +53,6 @@ export default function LandingPage() {
   const [totalKeys, setTotalKeys] = useState(0)
   const { count, setRef: setCounterRef } = useCountUp(totalKeys)
 
-  const handleKeysGenerated = (quantity: number) => {
-    setTotalKeys((prev) => prev + quantity)
-  }
-
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual"
     window.scrollTo(0, 0)
@@ -306,7 +302,6 @@ export default function LandingPage() {
       <OnboardingModal
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
-        onSuccess={handleKeysGenerated}
       />
     </>
   )
