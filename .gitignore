@@ -12,6 +12,7 @@ next-env.d.ts
 
 # Env files
 .env*.local
+.env
 
 # Misc
 .DS_Store
@@ -20,3 +21,25 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+venv/
+.venv/
+*.egg-info/
+
+# SQLite
+*.db
+*.db-journal
+
+# EntropyLab exports
+backend/exports/
+
+# IDE
+.vscode/
+.idea/
