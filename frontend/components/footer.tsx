@@ -1,5 +1,4 @@
 import Image from "next/image"
-import Link from "next/link"
 
 export default function Footer() {
   return (
@@ -8,7 +7,7 @@ export default function Footer() {
         className="mx-auto flex flex-row items-center justify-between px-4 sm:px-6"
         style={{ maxWidth: "1200px" }}
       >
-        <Link href="/" className="flex items-center gap-2">
+        <a href="#" className="flex items-center gap-2">
           <Image
             src="/lava lamp logo.png"
             alt="EntropyLab logo"
@@ -19,15 +18,15 @@ export default function Footer() {
           <div className="text-base font-bold tracking-tight text-white">
             Entropy<span className="text-red-600">Lab</span>
           </div>
-        </Link>
+        </a>
 
         <nav className="flex items-center gap-6">
-          <Link
-            href="/"
+          <a
+            href="/#"
             className="text-xs text-teal-100 transition-colors hover:text-white"
           >
             Inicio
-          </Link>
+          </a>
         </nav>
       </div>
     </footer>

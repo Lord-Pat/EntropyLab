@@ -57,7 +57,7 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
       >
         {/* Top bar: logo + hamburger (mobile) / logo + nav (desktop) */}
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
+          <a href="#" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
             <Image
               src="/lava lamp logo.png"
               alt="EntropyLab logo"
@@ -68,7 +68,7 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
             <div className="text-xl font-bold tracking-tight text-white">
               Entropy<span className="text-red-600">Lab</span>
             </div>
-          </Link>
+          </a>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-6">
