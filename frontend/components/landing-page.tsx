@@ -7,12 +7,14 @@ import Footer from "@/components/footer"
 import Header from "@/components/header"
 import OnboardingModal from "@/components/onboarding-modal"
 
+// Función que nos permite hacer el contador de claves generadas
+// El cual va interconectado con API
 function useCountUp(target: number) {
   const [count, setCount] = useState(0)
   const [ref, setRef] = useState<HTMLDivElement | null>(null)
   const currentCount = useRef(0)
   const hasStarted = useRef(false)
-
+  // Empieza animación de num a num
   const animateTo = (from: number, to: number, duration: number) => {
     const startTime = performance.now()
     const tick = (now: number) => {
@@ -24,7 +26,7 @@ function useCountUp(target: number) {
     }
     requestAnimationFrame(tick)
   }
-
+  // Añadimos observer con useEffect para que muestre cuando lleguemos al apartado del scroll
   useEffect(() => {
     if (!ref) return
     const observer = new IntersectionObserver(
@@ -48,11 +50,14 @@ function useCountUp(target: number) {
   return { count, setRef }
 }
 
+// Funciones dentro de LandingPage
 export default function LandingPage() {
+  // Constantes para el contador de claves y el onborda
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
   const [totalKeys, setTotalKeys] = useState(0)
   const { count, setRef: setCounterRef } = useCountUp(totalKeys)
 
+  // Fix para restaurar refresh desde el inicio de la página.
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual"
     window.scrollTo(0, 0)
@@ -63,9 +68,12 @@ export default function LandingPage() {
     let retryTimeout: ReturnType<typeof setTimeout>
     let currentController: AbortController | null = null
 
+    // Función SSE (Server-Sent Events) para mantener una conexión abierta con la API.
+
     async function connectSSE() {
       currentController = new AbortController()
       try {
+        // URL que apunta a la ruta de la API.
         const url = `${process.env.NEXT_PUBLIC_API_URL}/keys/count/stream`
         const res = await fetch(url, {
           headers: { "ngrok-skip-browser-warning": "true" },
@@ -77,9 +85,9 @@ export default function LandingPage() {
           return
         }
         if (!res.body) return
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let buffer = ""
+        const reader = res.body.getReader() // Lector de datos del backend
+        const decoder = new TextDecoder() // Codificador de bytes a texto
+        let buffer = ""     
         while (active) {
           const { done, value } = await reader.read()
           if (done) break
@@ -99,6 +107,7 @@ export default function LandingPage() {
       if (active) retryTimeout = setTimeout(connectSSE, 5000)
     }
 
+    // Timeout de reconexión del SSE en caso de que falle la conexión con API.
     connectSSE()
     return () => {
       active = false
@@ -107,6 +116,7 @@ export default function LandingPage() {
     }
   }, [])
 
+  // useEffect para mostrar el onborda.
   useEffect(() => {
     if (!isOnboardingOpen) return
     const handleEscape = (event: KeyboardEvent) => {
@@ -126,8 +136,10 @@ export default function LandingPage() {
     <>
       <Header onOpenOnboarding={openOnboarding} />
 
+      {/* Cabe recalcar que en todas las sections en los contenidos tenemos clamps
+      lo cual nos sirve para mostrar correctamente el frontend en la parte móvil y quede completamente responsive */}
       <main className="min-h-screen">
-        {/* Section 1 — Hero */}
+        {/* Primera Section */}
         <section className="relative flex min-h-screen items-center overflow-hidden">
           <VideoBackground />
           <div
@@ -147,7 +159,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Section 2 — Three pillars */}
+        {/* Section 2 - Textos explicativos */}
         <section className="flex h-auto items-center border-y border-white/10 py-12.5" style={{ backgroundColor: "#111111" }}>
           <div
             className="mx-auto w-full px-6"
@@ -187,7 +199,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Contenido Counter visual para clientes */}
+        {/* Section3 con el counter */}
         <section className="flex h-auto items-center border-y border-white/10 py-12.5" style={{ backgroundColor: "#111111" }}>
           <div
             className="mx-auto w-full px-6"
@@ -200,22 +212,20 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Section 3 — Sobre nosotros */}
+        {/* Section 4 — Sobre nosotros */}
         <section id="sobre-nosotros" className="flex h-auto items-center border-y border-white/10 py-16" style={{ backgroundColor: "#1a1a1a" }}>
           <div
             className="mx-auto w-full px-6"
             style={{ maxWidth: "1200px" }}
           >
             <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-16">
-              {/* Left: shared team photo */}
+              {/* Imagen de equipo*/}
               <div className="aspect-4/3 w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                {/* Replace src with your actual team photo, e.g. /team-photo.jpg */}
                 <div className="flex h-full items-center justify-center text-sm text-gray-600">
                   <img src="/foto_grupo.jpeg" className="h-full w-full object-cover" />
                 </div>
               </div>
 
-              {/* Right: team members */}
               <div className="flex flex-col">
                 <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-red-400">
                   Sobre nosotros

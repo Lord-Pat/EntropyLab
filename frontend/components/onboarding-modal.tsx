@@ -5,38 +5,41 @@ import { toast } from "sonner"
 
 import styles from "./onboarding-modal.module.css"
 
+// Controlamos las variables de apertura, cierre y success
 type OnboardingModalProps = {
   isOpen: boolean
   onClose: () => void
   onSuccess?: (quantity: number) => void
 }
 
-
+// Titulos para las 4 pantallas 
 const TITLES = [
-  "&iquest;Cu&aacute;ntas claves necesitas?",
-  "Formato de exportaci&oacute;n",
-  "Obtenci&oacute;n y env&iacute;o",
+  "¿Cuántas claves necesitas?",
+  "Formato de exportación",
+  "Obtención y envío",
   "Confirmar y generar",
 ]
-
+// Información del paso actual
 const EYES = ["Paso 1 de 4", "Paso 2 de 4", "Paso 3 de 4", "Paso 4 de 4"]
+// Labels que se muestran a la hora de hacer los pasos del onborda
 const STEP_LABELS = ["Cantidad", "Formato", "Envío", "Confirmar"]
 
 const quantityOptions = [1, 5, 10, 15, 20]
 
+// Tipos de export y envíos
 type ExportType = "csv" | "json" | "txt" | null
 type DeliveryType = "download" | "email" | null
 
 export default function OnboardingModal({ isOpen, onClose, onSuccess }: OnboardingModalProps) {
-  const [step, setStep] = useState(1)
-  const [selQty, setSelQty] = useState<number | null>(null)
-  const [selExport, setSelExport] = useState<ExportType>(null)
-  const [selDelivery, setSelDelivery] = useState<DeliveryType>(null)
+  const [step, setStep] = useState(1)  // Paso en el que estamos
+  const [selQty, setSelQty] = useState<number | null>(null) // Cantidad seleccionada
+  const [selExport, setSelExport] = useState<ExportType>(null)  // Tipo de export
+  const [selDelivery, setSelDelivery] = useState<DeliveryType>(null) // Tipo de descarga
   const [accOpen, setAccOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [isSuccess, setIsSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
+  // abrimos onborda y dejamos todo a false menos el Step que indicaremos el primero.
   useEffect(() => {
     if (!isOpen) {
       return
@@ -52,11 +55,12 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }: Onboardi
     setIsSubmitting(false)
   }, [isOpen])
 
+  // En caso de que todos los pasos hayan sido correctos
   useEffect(() => {
     if (!isSuccess) {
       return
     }
-
+    // Mandamos un timeout y cerramos la ventana.
     const timeout = window.setTimeout(() => {
       onClose()
     }, 1800)
@@ -64,18 +68,19 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }: Onboardi
     return () => window.clearTimeout(timeout)
   }, [isSuccess, onClose])
 
+  // Verificacíon para ver si el mail es correcto.
   const isEmailValid = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), [email])
-
+  // Controlamos los apartados de cada contenido del onborda.
   const isNextDisabled = useMemo(() => {
-    if (step === 1) return !selQty
-    if (step === 2) return !selExport
+    if (step === 1) return !selQty  // En el primer step solo devolveremos el valor de la cantidad a seleccionar
+    if (step === 2) return !selExport // En el segundo step mandaremos el tipo en el que queremos exportar
     if (step === 3) {
-      if (!selDelivery) return true
-      if (selDelivery === "email") return !isEmailValid
+      if (!selDelivery) return true   // Aqui manejaremos si sera descarga directa 
+      if (selDelivery === "email") return !isEmailValid // O descarga por mail y su respectiva validación
       return false
     }
     return false
-  }, [isEmailValid, selDelivery, selExport, selQty, step])
+  }, [isEmailValid, selDelivery, selExport, selQty, step]) // Actualizaremos todos estos valores de variables en total.
 
   if (!isOpen) {
     return null
@@ -83,17 +88,19 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }: Onboardi
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+  // Llegamos a la última step donde mostraremos y manejaremos.
   const goNext = async () => {
     if (step === 4) {
       try {
-        if (selDelivery === "download") {
+          if (selDelivery === "download") { // haremos una petición a la API con método POST para obtener las claves con su cantidad y formato
           const response = await fetch(
             `${API_URL}/keys/generate?cantidad=${selQty}&formato=${selExport}`,
             { method: "POST" }
           )
-
+          // en caso de que haya cualquier error mandaremos un mensaje.
           if (!response.ok) throw new Error("Error generando claves")
 
+          // Manejamos la exportación por JSON
           if (selExport === "json") {
             const data = await response.json()
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
@@ -113,7 +120,7 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }: Onboardi
             URL.revokeObjectURL(url)
           }
         }
-
+        // En caso del envío por mail lo mandaremos con un POST para poder obtener correctamente las claves en su destinatario via email.
         if (selDelivery === "email") {
           const response = await fetch(
             `${API_URL}/keys/send-email?cantidad=${selQty}&formato=${selExport}&email=${encodeURIComponent(email)}`,
@@ -121,7 +128,7 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }: Onboardi
           )
           if (!response.ok) throw new Error("Error enviando email")
         }
-
+        // En caso de que todo sea correcto mostraremos el toast (Sonner) con un mensaje de validación.
         onSuccess?.(selQty ?? 1)
         toast.success(`${selQty ?? 1} clave${(selQty ?? 1) > 1 ? "s" : ""} generada${(selQty ?? 1) > 1 ? "s" : ""} correctamente`)
         setIsSuccess(true)
@@ -136,6 +143,7 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }: Onboardi
       setStep((current) => current + 1)
     }
   }
+  // Constante para el manejo de poder tirar la step hacia atrás
   const goBack = () => {
     setStep((current) => Math.max(1, current - 1))
   }
