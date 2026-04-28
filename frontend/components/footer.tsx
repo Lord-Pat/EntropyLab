@@ -23,7 +23,7 @@ export default function Footer() {
         <nav className="flex items-center gap-6">
           <a
             href="/#"
-            className="text-xs text-teal-100 transition-colors hover:text-white"
+            className="text-xs text-white transition-colors hover:text-red-400"
           >
             Inicio
           </a>

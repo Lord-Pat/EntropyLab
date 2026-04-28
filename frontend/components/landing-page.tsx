@@ -139,9 +139,9 @@ export default function LandingPage() {
                 Claves generadas a través de la aleatoriedad de la lava
               </h1>
               <p className="mt-6 text-gray-300" style={{ textAlign: "center", fontSize: "clamp(1rem, 2.5vw, 1.5rem)", fontWeight: 200, letterSpacing: "-0.03em", lineHeight: "1.4em", textShadow: "0px 0px 7px rgba(10,10,10,0.97)" }}>
-                EntropyLab captura el movimiento impredecible de l&aacute;mparas de lava para
-                generar <span style={{ fontWeight: 700 }}>claves criptogr&aacute;ficas de alta entrop&iacute;a</span>. Sin algoritmos, sin
-                patrones: entrop&iacute;a f&iacute;sica pura. 100% open source.
+                EntropyLab captura el movimiento impredecible de lámparas de lava para
+                generar <span style={{ fontWeight: 700 }}>claves criptográficas de alta entropía</span>. Sin algoritmos, sin
+                patrones: entropía física pura. 100% open source.
               </p>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function LandingPage() {
               <div className="aspect-4/3 w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                 {/* Replace src with your actual team photo, e.g. /team-photo.jpg */}
                 <div className="flex h-full items-center justify-center text-sm text-gray-600">
-                  Foto conjunta del equipo
+                  <img src="/foto_grupo.jpeg" className="h-full w-full object-cover" />
                 </div>
               </div>
 
@@ -227,7 +227,8 @@ export default function LandingPage() {
                     Aarón Martínez
                   </h3>
                   <p className="mt-2 text-gray-400" style={{ fontWeight: 200, letterSpacing: "-0.02em", lineHeight: "1.5em", fontSize: "0.95em" }}>
-                    Aquí irá tu descripción personal: rol, motivación o dato curioso. Unas veinte palabras funcionan bien.
+                    Backend, hardware y estadística. En EntropyLab me encargué de todo lo que ocurre entre la lámpara y la clave: captura de entropía,
+                    generación, análisis y API. Me gusta entender cómo funcionan las cosas por dentro.
                   </p>
                   <div className="mt-4 flex gap-3">
                     <a
@@ -263,7 +264,8 @@ export default function LandingPage() {
                     Patrick Carbajal
                   </h3>
                   <p className="mt-2 text-gray-400" style={{ fontWeight: 200, letterSpacing: "-0.02em", lineHeight: "1.5em", fontSize: "0.95em" }}>
-                    Aquí irá tu descripción personal: rol, motivación o dato curioso. Unas veinte palabras funcionan bien.
+                    Frontend y experiencia de usuario. En EntropyLab diseñé e implemente la interfaz web que hace accesible
+                    todo lo que ocurre en el backend. Me interesa que la tecnología compleja sea fácil de usar.
                   </p>
                   <div className="mt-4 flex gap-3">
                     <a
