@@ -208,6 +208,15 @@ export default function LandingPage() {
             <div ref={setCounterRef}>
               <h3 className="font-bold text-white text-center" style={{ fontSize: "clamp(1.25rem, 3vw, 2rem)", lineHeight: "1.1em", letterSpacing: "-0.03em" }}>Claves generadas</h3>
               <p className="text-center text-red-400 font-bold mt-4" style={{ fontSize: "clamp(2rem, 6vw, 3rem)" }}>{count.toLocaleString()}</p>
+              <div className="flex justify-center mt-6 md:hidden">
+                <button
+                  type="button"
+                  onClick={() => setIsOnboardingOpen(true)}
+                  className="rounded-full bg-red-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-700"
+                >
+                  Obtener claves
+                </button>
+              </div>
             </div>
           </div>
         </section>
