@@ -140,7 +140,7 @@ export default function LandingPage() {
       lo cual nos sirve para mostrar correctamente el frontend en la parte móvil y quede completamente responsive */}
       <main className="min-h-screen">
         {/* Primera Section */}
-        <section className="relative flex min-h-screen items-center overflow-hidden">
+        <section className="relative flex min-h-screen items-center overflow-hidden pt-16">
           <VideoBackground />
           <div
             className="mx-auto w-full px-6"

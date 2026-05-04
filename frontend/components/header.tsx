@@ -109,16 +109,16 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
           </a>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-6">
             {desktopNavLinks}
           </nav>
 
-          {/* Hamburger button — mobile only */}
+          {/* Hamburger button — mobile + landscape mobile */}
           <button
             type="button"
             aria-label="Abrir menú"
             onClick={() => setIsOpen((v) => !v)}
-            className="md:hidden flex flex-col justify-center items-center gap-1.5 p-2 text-white"
+            className="lg:hidden flex flex-col justify-center items-center gap-1.5 p-2 text-white"
           >
             <span className={`block h-0.5 w-6 bg-white transition-transform duration-200 ${isOpen ? "translate-y-2 rotate-45" : ""}`} />
             <span className={`block h-0.5 w-6 bg-white transition-opacity duration-200 ${isOpen ? "opacity-0" : ""}`} />
@@ -128,7 +128,7 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
 
         {/* Mobile dropdown nav */}
         {isOpen && (
-          <nav className="md:hidden flex flex-col items-end gap-4 pb-4 pt-2 border-t border-white/10">
+          <nav className="lg:hidden flex flex-col items-end gap-4 pb-4 pt-2 border-t border-white/10">
             {mobileNavLinks}
           </nav>
         )}
