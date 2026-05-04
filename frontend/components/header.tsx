@@ -11,7 +11,7 @@ type HeaderProps = {
 export default function Header({ onOpenOnboarding }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const navLinks = (
+  const desktopNavLinks = (
     <>
       <a
         href="/#sobre-nosotros"
@@ -49,6 +49,44 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
     </>
   )
 
+  const mobileNavLinks = (
+    <>
+      <a
+        href="/#sobre-nosotros"
+        onClick={() => setIsOpen(false)}
+        className="text-sm font-medium text-white outline-none transition-colors hover:text-red-400"
+      >
+        Sobre nosotros
+      </a>
+      <a
+        href="https://github.com/Lord-Pat/EntropyLab"
+        target="_blank"
+        rel="noreferrer"
+        onClick={() => setIsOpen(false)}
+        className="text-sm font-medium text-white outline-none transition-colors hover:text-red-400"
+      >
+        Github
+      </a>
+      {onOpenOnboarding ? (
+        <button
+          type="button"
+          onClick={() => { onOpenOnboarding(); setIsOpen(false) }}
+          className="text-sm font-medium text-red-500 outline-none transition-colors hover:text-red-400 text-right"
+        >
+          Obtener claves
+        </button>
+      ) : (
+        <Link
+          href="/"
+          onClick={() => setIsOpen(false)}
+          className="text-sm font-medium text-red-500 outline-none transition-colors hover:text-red-400 text-right"
+        >
+          Obtener claves
+        </Link>
+      )}
+    </>
+  )
+
   return (
     <header className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-black/40 backdrop-blur-md">
       <div
@@ -72,7 +110,7 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-6">
-            {navLinks}
+            {desktopNavLinks}
           </nav>
 
           {/* Hamburger button — mobile only */}
@@ -90,8 +128,8 @@ export default function Header({ onOpenOnboarding }: HeaderProps) {
 
         {/* Mobile dropdown nav */}
         {isOpen && (
-          <nav className="md:hidden flex flex-col gap-4 pb-4 pt-2 border-t border-white/10">
-            {navLinks}
+          <nav className="md:hidden flex flex-col items-end gap-4 pb-4 pt-2 border-t border-white/10">
+            {mobileNavLinks}
           </nav>
         )}
       </div>

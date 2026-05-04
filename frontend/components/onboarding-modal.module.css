@@ -493,6 +493,7 @@
 
   .stepsRow {
     gap: 14px;
+    padding-bottom: 8px;
   }
 
   .stepConnector {
