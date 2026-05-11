@@ -80,7 +80,7 @@ class CLI:
             try:
                 key = self.key_svc.generate()
                 contador += 1
-                if contador % 50 == 0:
+                if contador % 5 == 0:
                     print(f"  [{total:,} / {GENERATION_LIMIT:,}] última: {key.value}")
             except Exception as e:
                 print(f"Error generando clave: {e}")

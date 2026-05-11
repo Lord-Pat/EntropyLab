@@ -6,7 +6,7 @@ load_dotenv()
 
 
 # ── Cámara ────────────────────────────────────────────
-STREAM_URL = "http://192.168.32.148/video"
+STREAM_URL = "http://192.168.34.47/video"
 
 # ── Base de datos ─────────────────────────────────────
 DB_PATH = "entropylab.db"
@@ -18,7 +18,7 @@ CSV_EXPORT_PATH = "exports/"
 ALGORITHM_VERSION = "0.2.0"
 
 # ── Claves generadas masivamente ──────────────────────
-GENERATION_LIMIT = 100000
+GENERATION_LIMIT = 1000000
 
 # ── Email Ngrok ───────────────────────────────────────
 EMAIL_SENDER = os.getenv("ENTROPYLAB_EMAIL")

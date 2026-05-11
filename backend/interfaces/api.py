@@ -95,7 +95,10 @@ async def generate_keys(request: Request, cantidad: int = 1, formato: str = "jso
     if formato not in ["json", "csv", "txt"]:
         return JSONResponse(status_code=400, content={"error": "Formato no válido."})
 
-    fmt, contenido = _generar_contenido(cantidad, formato)
+    try:
+        fmt, contenido = _generar_contenido(cantidad, formato)
+    except RuntimeError:
+        return JSONResponse(status_code=503, content={"error": "Cámara no disponible. Comprueba la conexión con la ESP32."})
 
     total = await asyncio.to_thread(_get_total_sync)
     await _broadcast(total)
